@@ -1,0 +1,19 @@
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
+@media(max-width: 800px){
+    .signInPageContainer{
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 0 40px !important;
+    }
+    .twitterLogoContainer{
+        height: 100px !important;
+        justify-content: flex-start !important;
+    }
+    .twitterLogoImg{
+        width: 50px !important;
+    }
+    .contextContainer{
+        width: 80% !important;
+    }
+}
