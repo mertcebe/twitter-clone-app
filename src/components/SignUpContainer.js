@@ -6,6 +6,8 @@ import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createUser } from '../firebase/firebaseActions';
+import { useDispatch } from 'react-redux';
+import { toggleRegister } from '../reducers/signInReducers/SignInActions';
 
 const MyButton = styled.button`
   width: 100%;
@@ -29,6 +31,8 @@ const SignUpContainer = () => {
     let [password, setPassword] = useState();
     let [personalize, setPersonalize] = useState(true);
 
+    let dispatch = useDispatch();
+
     // select component for birthday
     let years = [];
     let days = [];
@@ -50,42 +54,41 @@ const SignUpContainer = () => {
     const handleChangeForYear = (event) => {
         setYear(event.target.value);
     };
-
     const getMonthNumber = (month) => {
-        if(month === 'January'){
+        if (month === 'January') {
             return 0;
         }
-        if(month === 'February'){
+        if (month === 'February') {
             return 1;
         }
-        if(month === 'March'){
+        if (month === 'March') {
             return 2;
         }
-        if(month === 'April'){
+        if (month === 'April') {
             return 3;
         }
-        if(month === 'May'){
+        if (month === 'May') {
             return 4;
         }
-        if(month === 'June'){
+        if (month === 'June') {
             return 5;
         }
-        if(month === 'July'){
+        if (month === 'July') {
             return 6;
         }
-        if(month === 'August'){
+        if (month === 'August') {
             return 7;
         }
-        if(month === 'September'){
+        if (month === 'September') {
             return 8;
         }
-        if(month === 'October'){
+        if (month === 'October') {
             return 9;
         }
-        if(month === 'November'){
+        if (month === 'November') {
             return 10;
         }
-        if(month === 'December'){
+        if (month === 'December') {
             return 11;
         }
     }
@@ -100,11 +103,12 @@ const SignUpContainer = () => {
             dateAdded: new Date().getTime()
         };
         createUser(user, email, password);
+        toggleRegister(dispatch, false);
     }
 
     return (
-        <div style={{ position: "fixed", top: "50%", left: "50%", backdropFilter: "brightness(0.6)", width: "100%", height: "100vh", transform: "translate(-50%, -50%)", zIndex: "100" }}>
-            <div style={{ position: "absolute", top: "50%", left: "50%", background: "#fff", transform: "translate(-50%, -50%)", width: "570px", height: "90vh", padding: "10px", borderRadius: "14px" }}>
+        <div className='signUpMediaContainer' style={{ position: "fixed", top: "50%", left: "50%", backdropFilter: "brightness(0.6)", width: "100%", height: "100vh", transform: "translate(-50%, -50%)", zIndex: "100" }}>
+            <div className='signUpMedia' style={{ position: "absolute", top: "50%", left: "50%", background: "#fff", transform: "translate(-50%, -50%)", width: "570px", height: "90vh", padding: "10px", borderRadius: "14px" }}>
                 <div className="d-flex" style={{ alignItems: "flex-start" }}>
                     {
                         step !== 1 ?
@@ -118,7 +122,7 @@ const SignUpContainer = () => {
                             :
                             <div style={{ width: "10%" }}>
                                 <IconButton onClick={() => {
-                                    // close func
+                                    toggleRegister(dispatch, false);
                                 }}>
                                     <CloseIcon />
                                 </IconButton>
@@ -229,7 +233,7 @@ const SignUpContainer = () => {
                                         This web browsing history is never stored along with your name,
                                         email or phone number.
                                     </label>
-                                    <input type="checkbox" id='ch-1' defaultChecked onChange={(e) => {
+                                    <input type="checkbox" id='ch-1' defaultChecked={personalize} onChange={(e) => {
                                         setPersonalize(e.target.checked);
                                     }} />
                                 </div>
@@ -259,8 +263,8 @@ const SignUpContainer = () => {
                                     }} label="Birthday" variant="outlined" />
                                 </Box >
 
-                                <small className='d-block mt-5' style={{fontSize: "12px"}}>
-                                By signing up, you agree to the Terms of Service, Privacy Policy and Cookies. Twitter may use your contact information, including your email address and phone number, for the purposes set out in our Privacy Policy, such as keeping your account secure and personalizing our services, including ads. Learn more. Unless you specify otherwise, others can find you when you enter your e-mail and phone number.
+                                <small className='d-block mt-5' style={{ fontSize: "12px" }}>
+                                    By signing up, you agree to the Terms of Service, Privacy Policy and Cookies. Twitter may use your contact information, including your email address and phone number, for the purposes set out in our Privacy Policy, such as keeping your account secure and personalizing our services, including ads. Learn more. Unless you specify otherwise, others can find you when you enter your e-mail and phone number.
                                 </small>
                             </div>
                         }
@@ -270,9 +274,14 @@ const SignUpContainer = () => {
                             step === 3 ?
                                 <MyButton style={{ background: "#1d9bf0" }} onClick={register}>Register</MyButton>
                                 :
-                                <MyButton disabled={false} style={{ background: true ? 'grey' : '#000' }} onClick={() => {
-                                    setStep(step + 1);
-                                }}>Next</MyButton>
+                                <MyButton
+                                    disabled={name && email && password && day && month && year ? false : true}
+                                    style={{ background: name && email && password && day && month && year ? '#000' : 'grey' }}
+                                    onClick={() => {
+                                        setStep(step + 1);
+                                    }}>
+                                    Next
+                                </MyButton>
                         }
                     </div>
 

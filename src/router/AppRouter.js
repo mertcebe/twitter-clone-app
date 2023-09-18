@@ -6,22 +6,32 @@ import PublicRoute from '../routes/PublicRoute'
 import HomePage from '../components/HomePage'
 import SignInPage from '../components/SignInPage'
 import useAuthorized from '../useAuth/useAuthorized';
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from '../components/Loading'
+import SideBar from '../components/SideBar'
 
 const AppRouter = () => {
-    let { isAuthorized } = useAuthorized();
+    let { isAuthorized, loading } = useAuthorized();
+    if (loading) {
+        return (
+            <Loading />
+        )
+    }
     return (
         <BrowserRouter>
-            <Routes>
-                <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
-                    <Route path={`/home`} element={<HomePage />} />
-                </Route>
+            <div className='container my-2' style={{display: "flex", alignItems: "flex-start"}}>
+                <SideBar />
+                <Routes>
+                    <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
+                        <Route path={`/home`} element={<HomePage />} />
+                    </Route>
 
-                <Route element={<PublicRoute isAuthorized={isAuthorized} />}>
-                    <Route path={`/`} element={<SignInPage />} />
-                </Route>
-            </Routes>
+                    <Route element={<PublicRoute isAuthorized={isAuthorized} />}>
+                        <Route path={`/`} element={<SignInPage />} />
+                    </Route>
+                </Routes>
+            </div>
             <ToastContainer
                 position="bottom-right"
                 autoClose={2000}
