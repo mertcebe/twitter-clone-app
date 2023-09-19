@@ -2,7 +2,7 @@ import { signOut } from 'firebase/auth'
 import React from 'react'
 import { auth } from '../firebase/firebaseConfig'
 import SideBar from './SideBar'
-import Home from './Home'
+import Home from './home/Home'
 import RightBar from './RightBar'
 
 const HomePage = () => {

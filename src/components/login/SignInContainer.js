@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { toggleSignIn } from '../reducers/signInReducers/SignInActions';
+import { toggleSignIn } from '../../reducers/signInReducers/SignInActions';
 import { useDispatch } from 'react-redux';
 import { Box, IconButton, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close'
-import twitterNewLogo from '../images/twitterNewLogo.png';
+import twitterNewLogo from '../../images/twitterNewLogo.png';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth } from '../firebase/firebaseConfig';
+import { auth } from '../../firebase/firebaseConfig';
 import { toast } from 'react-toastify';
 import styled from '@emotion/styled';
 
@@ -56,13 +56,13 @@ const SignInContainer = () => {
 
     const signInFunc = () => {
         signInWithEmailAndPassword(auth, email, password)
-        .then((userCredentials) => {
-            toast.dark(`${userCredentials.user.displayName}, welcome!`);
-        })
-        .catch((error) => {
-            let errorMsg = error.code.split('/').join(' ').split('-').join(' ');
-            toast.dark(errorMsg);
-        })
+            .then((userCredentials) => {
+                toast.dark(`${userCredentials.user.displayName}, welcome!`);
+            })
+            .catch((error) => {
+                let errorMsg = error.code.split('/').join(' ').split('-').join(' ');
+                toast.dark(errorMsg);
+            })
         toggleSignIn(dispatch, false);
     }
 
@@ -92,7 +92,7 @@ const SignInContainer = () => {
                                     setPassword(e.target.value);
                                 }} label="Password" variant="outlined" />
                             </Box>
-                            <MyColoredButton onClick={signInFunc} disabled={email && password?false:true} style={{background: email && password?'#000':'grey'}}>Sign in</MyColoredButton>
+                            <MyColoredButton onClick={signInFunc} disabled={email && password ? false : true} style={{ background: email && password ? '#000' : 'grey' }}>Sign in</MyColoredButton>
                         </div>
                     </div>
                 </div>

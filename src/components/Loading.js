@@ -1,10 +1,10 @@
 import React from 'react'
 import twitterNewLogo from '../images/twitterNewLogo.png';
 
-const Loading = () => {
+const Loading = ({width, height}) => {
   return (
-    <div style={{display: "flex", justifyContent: "center", height: "90vh", alignItems: "center"}}>
-        <img src={twitterNewLogo} alt="" style={{width: "50px"}} />
+    <div style={{display: "flex", justifyContent: "center", height: height?`${height}vh`:"90vh", alignItems: "center"}}>
+        <img src={twitterNewLogo} alt="" style={{width: width?`${width}px`:"50px"}} />
     </div>
   )
 }

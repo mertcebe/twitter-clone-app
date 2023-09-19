@@ -4,10 +4,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { createUser } from '../firebase/firebaseActions';
+import { createUser } from '../../firebase/firebaseActions';
 import { useDispatch } from 'react-redux';
-import { toggleRegister } from '../reducers/signInReducers/SignInActions';
+import { toggleRegister } from '../../reducers/signInReducers/SignInActions';
 
 const MyButton = styled.button`
   width: 100%;

@@ -28,7 +28,7 @@ const MyColoredButton = styled.button`
 
 const SideBar = () => {
   return (
-    <div className='shadow sidebar' style={{width: "300px", padding: "10px", marginRight: "100px"}}>
+    <div className='shadow sidebar' style={{width: "300px", padding: "10px", marginRight: "50px"}}>
         <NavLink to={'/home'} style={{textDecoration: "none"}}><img src={twitterNewLogo} alt="" style={{width: "30px", pointerEvents: "none"}} /></NavLink>
         <ul className='sidebarUl' style={{listStyle: "none", margin: "0", padding: "0", marginTop: "40px"}}>
             <NavLink className='sidebarMenuItem' to={'/home'} style={{padding: "5px 0px", textDecoration: "none", color: "#454545", fontSize: "18px", margin: "10px 0", display: "flex", alignItems: "center"}}><HomeIcon sx={{marginRight: "10px", width: "30px"}} />Home</NavLink>

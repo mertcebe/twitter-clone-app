@@ -1,17 +1,15 @@
 import React, { useState } from 'react'
-import { signInWithRedirect, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth'
-import { auth } from '../firebase/firebaseConfig';
-import { TextField, Box, Button, IconButton } from '@mui/material';
-import { setUserToFirebase } from '../firebase/firebaseActions';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { auth } from '../../firebase/firebaseConfig';
 import { toast } from 'react-toastify';
-import twitterNewLogo from '../images/twitterNewLogo.png';
+import twitterNewLogo from '../../images/twitterNewLogo.png';
 import styled from '@emotion/styled';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link } from 'react-router-dom';
 import SignUpContainer from './SignUpContainer';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleRegister, toggleSignIn } from '../reducers/signInReducers/SignInActions';
+import { toggleRegister, toggleSignIn } from '../../reducers/signInReducers/SignInActions';
 import SignInContainer from './SignInContainer';
 
 const MyLightButton = styled.button`
