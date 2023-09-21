@@ -97,7 +97,10 @@ const SignUpContainer = () => {
         let user = {
             name: name,
             email: email,
-            birthday: birthdayDate,
+            birthday: {
+                birthdayMs: birthdayDate,
+                birthdayDate: `${day}/${month}/${year}`
+            },
             personalize: personalize,
             dateAdded: new Date().getTime()
         };

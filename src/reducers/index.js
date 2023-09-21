@@ -2,12 +2,14 @@ import React from 'react'
 import {createStore, combineReducers} from 'redux'
 import {Provider} from 'react-redux'
 import SignInReducer from './signInReducers/SignInReducer'
+import CommentReducer from './commentReducers/CommentReducer'
 
 
 const AppReducer = ({children}) => {
     const store = createStore(
         combineReducers({
-            signInReducer: SignInReducer
+            signInReducer: SignInReducer,
+            commentReducer: CommentReducer
         })
     )
 

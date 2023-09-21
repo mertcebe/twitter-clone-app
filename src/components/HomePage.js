@@ -7,7 +7,7 @@ import RightBar from './RightBar'
 
 const HomePage = () => {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "900px" }}>
+    <div className='container my-2' style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "900px" }}>
       <Home />
       <RightBar />
     </div>

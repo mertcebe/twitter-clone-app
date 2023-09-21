@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import style from './style.module.css';
 import { uploadImageToStorage } from '../../images/ImageActions';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import Skeleton from './skeleton';
 
 const MyColoredButton = styled.button`
   width: 100px;
@@ -28,14 +29,18 @@ const MyColoredButton = styled.button`
 const AddPostContainer = () => {
     let [text, setText] = useState();
     let [file, setFile] = useState();
+    let [loading, setLoading] = useState(false);
+    let [isSelectedImage, setIsSelectedImage] = useState(false);
 
     const addPostFunc = () => {
+        setLoading(true);
         let user = {
             name: auth.currentUser.displayName,
             email: auth.currentUser.email,
             uid: auth.currentUser.uid
         };
         if (file) {
+            setIsSelectedImage(true);
             uploadImageToStorage(file, auth.currentUser.uid)
                 .then((snapshot) => {
                     let tweet = {
@@ -51,10 +56,12 @@ const AddPostContainer = () => {
                                 ...tweet,
                                 owner: user
                             })
+                            setLoading(false);
                         })
                 })
         }
         else {
+            setIsSelectedImage(false);
             let tweet = {
                 text: text,
                 img: null,
@@ -68,58 +75,70 @@ const AddPostContainer = () => {
                         ...tweet,
                         owner: user
                     })
+                        .then(() => {
+                            setLoading(false);
+                        })
                 })
         }
         setFile();
+        document.getElementById('fileInput1').value = '';
         setText('');
     }
 
     return (
-        <div style={{ padding: "10px", display: "flex", alignItems: "flex-start", width: "100%", border: "1px solid #efefef" }}>
-            <div style={{ marginRight: "10px" }}>
-                <img src={auth.currentUser.photoURL ? auth.currentUser.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", pointerEvents: "none" }} />
-            </div>
-            <div>
-                <textarea cols='60' value={text} onChange={(e) => {
-                    setText(e.target.value);
-                }} style={{ maxHeight: "80px", height: "80px", outline: "none", resize: "none", border: "none", borderBottom: "1px solid #dfdfdf" }} placeholder="What's happening?"></textarea>
-                {
-                    file ?
-                        <div className={style.addFileContainer}>
-                            <span className={style.fileSpan}></span>
-                            <IconButton onClick={() => {
-                                setFile();
-                                document.getElementById('fileInput1').value = '';
-                            }} sx={{ position: "absolute", top: "10px", left: "10px", zIndex: "10" }}>
-                                <CloseIcon sx={{ fontSize: "16px", color: "#fff" }} />
+        <div>
+            <div style={{ padding: "10px", display: "flex", alignItems: "flex-start", width: "100%", border: "1px solid #efefef" }}>
+                <div style={{ marginRight: "10px" }}>
+                    <img src={auth.currentUser.photoURL ? auth.currentUser.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", pointerEvents: "none" }} />
+                </div>
+                <div>
+                    <textarea cols='59' value={text} onChange={(e) => {
+                        setText(e.target.value);
+                    }} style={{ maxHeight: "80px", height: "80px", outline: "none", resize: "none", border: "none", borderBottom: "1px solid #dfdfdf" }} placeholder="What's happening?"></textarea>
+                    {
+                        file ?
+                            <div className={style.addFileContainer}>
+                                <span className={style.fileSpan}></span>
+                                <IconButton onClick={() => {
+                                    setFile();
+                                    document.getElementById('fileInput1').value = '';
+                                }} sx={{ position: "absolute", top: "10px", left: "10px", zIndex: "10" }}>
+                                    <CloseIcon sx={{ fontSize: "16px", color: "#fff" }} />
+                                </IconButton>
+                                <img src={file.url} alt="" className={style.twitterProfileImg} />
+                            </div>
+                            :
+                            <></>
+                    }
+                    <div className='d-flex justify-content-between align-items-center'>
+                        <div>
+                            <input type="file" id='fileInput1' style={{ display: "none" }} onChange={(e) => {
+                                let file = e.target.files[0];
+                                let url = URL.createObjectURL(file);
+                                setFile({
+                                    name: file.name,
+                                    url: url,
+                                    self: file,
+                                    type: file.type
+                                });
+                            }} />
+                            <label htmlFor="fileInput1" style={{ cursor: "pointer" }}>
+                                <ImageIcon sx={{ color: "grey" }} />
+                            </label>
+                            <IconButton>
+                                <MoodIcon />
                             </IconButton>
-                            <img src={file.url} alt="" className={style.twitterProfileImg} />
                         </div>
-                        :
-                        <></>
-                }
-                <div className='d-flex justify-content-between align-items-center'>
-                    <div>
-                        <input type="file" id='fileInput1' style={{ display: "none" }} onChange={(e) => {
-                            let file = e.target.files[0];
-                            let url = URL.createObjectURL(file);
-                            setFile({
-                                name: file.name,
-                                url: url,
-                                self: file,
-                                type: file.type
-                            });
-                        }} />
-                        <label htmlFor="fileInput1" style={{ cursor: "pointer" }}>
-                            <ImageIcon sx={{ color: "grey" }} />
-                        </label>
-                        <IconButton>
-                            <MoodIcon />
-                        </IconButton>
+                        <MyColoredButton disabled={text || file ? false : true} style={{ background: text || file ? '' : 'grey' }} onClick={addPostFunc}>Tweet</MyColoredButton>
                     </div>
-                    <MyColoredButton disabled={text || file ? false : true} style={{ background: text || file ? '' : 'grey' }} onClick={addPostFunc}>Tweet</MyColoredButton>
                 </div>
             </div>
+            {
+                loading ?
+                    <Skeleton hasImg={isSelectedImage} />
+                    :
+                    <></>
+            }
         </div>
     )
 }

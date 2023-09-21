@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../components/Loading'
 import SideBar from '../components/SideBar'
+import { auth } from '../firebase/firebaseConfig'
 
 const AppRouter = () => {
     let { isAuthorized, loading } = useAuthorized();
@@ -20,8 +21,10 @@ const AppRouter = () => {
     }
     return (
         <BrowserRouter>
-            <div className='container my-2' style={{display: "flex", alignItems: "flex-start"}}>
-                <SideBar />
+            <div className={isAuthorized&&'container my-2'} style={{display: "flex", alignItems: "flex-start"}}>
+                {
+                    isAuthorized && <SideBar />
+                }
                 <Routes>
                     <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
                         <Route path={`/home`} element={<HomePage />} />
