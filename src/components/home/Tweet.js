@@ -1,6 +1,6 @@
 import React, { Children, useState } from 'react'
 import profileImg from '../../images/twitterProfileImg.png';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import style from './style.module.css';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -60,8 +60,10 @@ const MyActionButton = ({ icon, text, type, owner }) => {
     )
 }
 
-const Tweet = ({ tweet }) => {
+const Tweet = ({ tweet, onlyShown = false }) => {
     const { text, img, dateAdded, owner, id } = tweet;
+
+    let navigate = useNavigate();
 
     // options
     const [anchorEl, setAnchorEl] = useState(null);
@@ -85,7 +87,7 @@ const Tweet = ({ tweet }) => {
     }
 
     return (
-        <div>
+        <Link to={`/home/posts/${id}`} style={{ textDecoration: "none", color: "#000" }}>
             <div className={`d-flex align-items-start ${style.tweetContainer}`}>
                 <div style={{ marginRight: "10px" }}>
                     <img src={owner.photoURL ? owner.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "5px" }} />
@@ -94,8 +96,16 @@ const Tweet = ({ tweet }) => {
                     <div>
                         <NavLink to={`/profile/${owner.uid}`} className={style.tweetOwnerName}><b>{owner.name}</b></NavLink>
                         <NavLink to={`/profile/${owner.uid}`} className={style.tweetOwnerEmail}>@{owner.email}</NavLink>
-                        <span style={{ position: "relative" }}><i className="fa-solid fa-circle" style={{ fontSize: "3px", position: "absolute", top: "55%", left: "-5px", color: "grey" }}></i></span>
-                        <span>{new Date(dateAdded).toLocaleDateString()}</span>
+
+                        {
+                            onlyShown ?
+                                <></>
+                                :
+                                <>
+                                    <span style={{ position: "relative" }}><i className="fa-solid fa-circle" style={{ fontSize: "3px", position: "absolute", top: "55%", left: "-5px", color: "grey" }}></i></span>
+                                    <span>{new Date(dateAdded).toLocaleDateString()}</span>
+                                </>
+                        }
                     </div>
                     <p className='m-0'>{text}</p>
                     <IconButton
@@ -142,18 +152,21 @@ const Tweet = ({ tweet }) => {
                             :
                             <></>
                     }
+                    {
+                        onlyShown && <small className='text-muted'>{new Date(dateAdded).toLocaleString()}</small>
+                    }
                     {/* comment retweet like istatistics share */}
-                    <div className='d-flex justify-content-between align-items-center'>
-                        <MyActionButton type={'comment'} owner={{...owner, id}} icon={<i className="fa-regular fa-comment"></i>} text={'5.283'} />
-                        <MyActionButton type={'retweet'} owner={{...owner, id}} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
-                        <MyActionButton type={'like'} owner={{...owner, id}} icon={<i className="fa-regular fa-heart"></i>} text={'275,8B'} />
-                        <MyActionButton type={'istatistics'} owner={{...owner, id}} icon={<i className="fa-solid fa-signal"></i>} />
-                        <MyActionButton type={'share'} owner={{...owner, id}} icon={<i className="fa-solid fa-arrow-up-from-bracket"></i>} />
-                    </div>
+                    <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>
+                        <MyActionButton type={'comment'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={'5.283'} />
+                        <MyActionButton type={'retweet'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
+                        <MyActionButton type={'like'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={'275,8B'} />
+                        <MyActionButton type={'istatistics'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-signal"></i>} />
+                        <MyActionButton type={'share'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-arrow-up-from-bracket"></i>} />
+                    </NavLink>
                 </div>
             </div>
-            
-        </div>
+
+        </Link>
     )
 }
 

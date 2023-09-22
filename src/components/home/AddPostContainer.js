@@ -10,6 +10,8 @@ import style from './style.module.css';
 import { uploadImageToStorage } from '../../images/ImageActions';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import Skeleton from './skeleton';
+import { refreshTweet, refreshTweets } from '../../reducers/tweetsReducers/TweetActions';
+import { useDispatch, useSelector } from 'react-redux';
 
 const MyColoredButton = styled.button`
   width: 100px;
@@ -31,6 +33,11 @@ const AddPostContainer = () => {
     let [file, setFile] = useState();
     let [loading, setLoading] = useState(false);
     let [isSelectedImage, setIsSelectedImage] = useState(false);
+
+    let refreshTweet = useSelector((state) => {
+        return state.tweetsReducer.refreshTweet;
+    })
+    let dispatch = useDispatch();
 
     const addPostFunc = () => {
         setLoading(true);
@@ -57,6 +64,7 @@ const AddPostContainer = () => {
                                 owner: user
                             })
                             setLoading(false);
+                            refreshTweets(dispatch, !refreshTweet);
                         })
                 })
         }
@@ -77,6 +85,7 @@ const AddPostContainer = () => {
                     })
                         .then(() => {
                             setLoading(false);
+                            refreshTweets(dispatch, !refreshTweet);
                         })
                 })
         }
@@ -92,7 +101,7 @@ const AddPostContainer = () => {
                     <img src={auth.currentUser.photoURL ? auth.currentUser.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", pointerEvents: "none" }} />
                 </div>
                 <div>
-                    <textarea cols='59' value={text} onChange={(e) => {
+                    <textarea cols='66' value={text} onChange={(e) => {
                         setText(e.target.value);
                     }} style={{ maxHeight: "80px", height: "80px", outline: "none", resize: "none", border: "none", borderBottom: "1px solid #dfdfdf" }} placeholder="What's happening?"></textarea>
                     {

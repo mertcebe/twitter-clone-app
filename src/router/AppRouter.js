@@ -11,6 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../components/Loading'
 import SideBar from '../components/SideBar'
 import { auth } from '../firebase/firebaseConfig'
+import TweetCommentsPage from '../components/home/comments/TweetCommentsPage'
+import RightBar from '../components/RightBar'
 
 const AppRouter = () => {
     let { isAuthorized, loading } = useAuthorized();
@@ -21,19 +23,23 @@ const AppRouter = () => {
     }
     return (
         <BrowserRouter>
-            <div className={isAuthorized&&'container my-2'} style={{display: "flex", alignItems: "flex-start"}}>
+            <div className={isAuthorized&&'container'} style={{display: "flex", alignItems: "flex-start", width: "100%"}}>
                 {
                     isAuthorized && <SideBar />
                 }
                 <Routes>
                     <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
                         <Route path={`/home`} element={<HomePage />} />
+                        <Route path={`/home/posts/:id`} element={<TweetCommentsPage />} />
                     </Route>
 
                     <Route element={<PublicRoute isAuthorized={isAuthorized} />}>
                         <Route path={`/`} element={<SignInPage />} />
                     </Route>
                 </Routes>
+                {
+                    isAuthorized && <RightBar />
+                }
             </div>
             <ToastContainer
                 position="bottom-right"

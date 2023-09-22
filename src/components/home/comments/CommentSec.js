@@ -7,10 +7,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import profileImg from '../../../images/twitterProfileImg.png';
 import { useDispatch } from 'react-redux';
 import { toggleCommentSec } from '../../../reducers/commentReducers/CommentActions';
-import { auth } from '../../../firebase/firebaseConfig';
+import database, { auth } from '../../../firebase/firebaseConfig';
 import MoodIcon from '@mui/icons-material/Mood';
 import ImageIcon from '@mui/icons-material/Image';
 import styled from '@emotion/styled';
+import { addDoc, collection, setDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+import { Navigate, useNavigate } from 'react-router';
+import TweetCommentsPage from './TweetCommentsPage';
 
 const BootstrapDialog = styledForStyles(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -38,6 +42,9 @@ const MyColoredButton = styled.button`
 
 const CommentSec = ({ owner }) => {
     let [text, setText] = useState();
+
+    let navigate = useNavigate();
+
     useEffect(() => {
         console.log(owner)
     }, [])
@@ -53,6 +60,23 @@ const CommentSec = ({ owner }) => {
         let randomNumber = Math.floor(Math.random() * (21) );
         setText(text + emojiesList[randomNumber]);
         // '/\p{&#x1F600;}+/gu'
+    }
+
+    const replyTweetFunc = () => {
+        const {displayName, uid, email} = auth.currentUser;
+        addDoc(collection(database, `allTweets/${owner.id}/comments`), {
+            sender: {
+                displayName: displayName,
+                email: email,
+                uid: uid
+            },
+            commentText: text,
+            dateSended: new Date().getTime()
+        })
+        .then((snapshot) => {
+            navigate(`/home/posts/${owner.id}`);
+            toggleCommentSec(dispatch, false, owner);
+        })
     }
 
     return (
@@ -101,7 +125,7 @@ const CommentSec = ({ owner }) => {
                                         <MoodIcon />
                                     </IconButton>
                                 </div>
-                                <MyColoredButton disabled={text ? false : true} style={{ background: text ? '' : 'grey' }} onClick={() => { }}>Reply</MyColoredButton>
+                                <MyColoredButton disabled={text ? false : true} style={{ background: text ? '' : 'grey' }} onClick={replyTweetFunc}>Reply</MyColoredButton>
                             </div>
                         </div>
                     </div>

@@ -4,13 +4,15 @@ import { auth } from '../firebase/firebaseConfig'
 import SideBar from './SideBar'
 import Home from './home/Home'
 import RightBar from './RightBar'
+import { useSelector } from 'react-redux'
+import CommentSec from './home/comments/CommentSec'
 
 const HomePage = () => {
   return (
-    <div className='container my-2' style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "900px" }}>
+    <>
       <Home />
-      <RightBar />
-    </div>
+    </>
+
   )
 }
 

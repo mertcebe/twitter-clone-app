@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCyY4t0JgUsxtCqUcwUp5d-U6QTikrz27E",
-  authDomain: "twitter-app-2b0a1.firebaseapp.com",
-  projectId: "twitter-app-2b0a1",
-  storageBucket: "twitter-app-2b0a1.appspot.com",
-  messagingSenderId: "582702491904",
-  appId: "1:582702491904:web:90d5d08ada416bca8f6be5",
-  measurementId: "G-LBCGEJ9FN1"
+  apiKey: "AIzaSyBHvbx0EOczxShMqiebjuUOBSjynRXs2zo",
+  authDomain: "react-twitter-app-1b9f0.firebaseapp.com",
+  projectId: "react-twitter-app-1b9f0",
+  storageBucket: "react-twitter-app-1b9f0.appspot.com",
+  messagingSenderId: "343336545820",
+  appId: "1:343336545820:web:a31845ff838b1c5c41b9d9",
+  measurementId: "G-8CFLRXH170"
 };
 
 const app = initializeApp(firebaseConfig);

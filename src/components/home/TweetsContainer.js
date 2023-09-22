@@ -5,16 +5,12 @@ import database from '../../firebase/firebaseConfig';
 import Loading from '../Loading';
 import Tweet from './Tweet';
 import Skeleton from './skeleton';
-import CommentSec from './comments/CommentSec';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const TweetsContainer = () => {
     let [tweets, setTweets] = useState();
-    let [isCommentSecOpen, commentOwner] = useSelector((state) => {
-        return [state.commentReducer.isCommentSecOpen, state.commentReducer.commentOwner];
-    })
 
-    useEffect(() => {
+    const getTweets = () => {
         getDocs(query(collection(database, `allTweets`), orderBy('dateAdded', 'desc')))
             .then((snapshot) => {
                 let allTweets = [];
@@ -26,11 +22,19 @@ const TweetsContainer = () => {
                 })
                 setTweets(allTweets);
             })
-    }, [tweets]);
+    }
+
+    let refreshTweet = useSelector((state) => {
+        return state.tweetsReducer.refreshTweet;
+    })
+
+    useEffect(() => {
+        getTweets();
+    }, [refreshTweet]);
 
     if (!tweets) {
         return (
-            Array.from([1,2,3]).map((item) => {
+            Array.from([1, 2, 3]).map((item) => {
                 return (
                     <Skeleton hasImg={true} />
                 )
@@ -39,9 +43,6 @@ const TweetsContainer = () => {
     }
     return (
         <div className={style.tweetsContainer}>
-            {
-                isCommentSecOpen&&<CommentSec owner={commentOwner} />
-            }
             {
                 tweets.map((tweet) => {
                     return (
