@@ -23,7 +23,7 @@ const AppRouter = () => {
     }
     return (
         <BrowserRouter>
-            <div className={isAuthorized&&'container'} style={{display: "flex", alignItems: "flex-start", width: "100%"}}>
+            <div className={isAuthorized&&'container'} style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%"}}>
                 {
                     isAuthorized && <SideBar />
                 }

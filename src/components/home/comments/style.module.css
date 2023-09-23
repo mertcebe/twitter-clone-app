@@ -18,3 +18,18 @@
     left: 0;
     border-radius: 5px;
 }
+
+.tweetOwnerName, .tweetOwnerEmail{
+    text-decoration: none;
+    color: #000;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.tweetOwnerEmail{
+    color: #6d6d6d;
+}
+
+.tweetOwnerName:hover{
+    text-decoration: underline;
+}

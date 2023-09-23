@@ -8,6 +8,8 @@ import { IconButton, TextField } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Skeleton from '../skeleton';
+import CommentContainer from './CommentContainer';
 
 const TweetCommentsPage = () => {
     const { id } = useParams();
@@ -33,33 +35,38 @@ const TweetCommentsPage = () => {
     const getTweet = async () => {
         getDoc(doc(database, `allTweets/${id}`))
             .then((snapshot) => {
-                console.log(snapshot.data(), id);
                 setTweet({
                     ...snapshot.data(),
                     id: id
                 });
             })
     }
+
+
+    let refreshTweet = useSelector((state) => {
+        return state.tweetsReducer.refreshTweet;
+    })
+
     useEffect(() => {
-        getComments()
+        getComments();
         getTweet();
-        console.log('qwdqwdqwd')
-    }, []);
+    }, [refreshTweet]);
 
     if (!allComments || !tweet) {
         return (
-            <Loading />
+            <div style={{ width: "50%", marginRight: "100px" }}>
+                <Loading width={'40'} height={'70'} />
+            </div>
         )
     }
     return (
-        <div style={{ width: "45%", marginRight: "100px" }}>
+        <div style={{ width: "45%", border: "1px solid #efefef" }}>
             <div style={{ border: "1px solid #efefef", height: "40px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>
                 <IconButton sx={{ position: "relative", top: "-2px", marginRight: "10px" }} onClick={() => {
-                    navigate('/home');
+                    navigate(-1);
                 }}>
                     <ArrowBackIcon sx={{ fontSize: "20px", color: "#000" }} />
                 </IconButton>
-                {/* <path d='M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z'></path> */}
                 <h5 className='d-inline-block' style={{ width: "90%", cursor: "pointer" }} onClick={() => {
                     window.scrollTo(0, 0);
                 }}><b>Tweet</b></h5>
@@ -69,14 +76,14 @@ const TweetCommentsPage = () => {
                 <Tweet tweet={tweet} onlyShown={true} />
             </div>
 
-            <div style={{ paddingBottom: "1000px" }}>
+            <div style={{ boxSizing: "border-box", paddingLeft: "60px" }}>
                 {
                     allComments ?
                         <>
                             {
                                 allComments.map((comment) => {
                                     return (
-                                        <p>{comment.commentText}</p>
+                                        <CommentContainer comment={comment} owner={tweet.owner} />
                                     )
                                 })
                             }

@@ -1,15 +1,16 @@
-import React, { Children, useState } from 'react'
+import React, { Children, useEffect, useState } from 'react'
 import profileImg from '../../images/twitterProfileImg.png';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import style from './style.module.css';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import styled from '@emotion/styled';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleCommentSec } from '../../reducers/commentReducers/CommentActions';
+import { refreshTweets } from '../../reducers/tweetsReducers/TweetActions';
 
 const ActionButton = styled.button`
   border-radius: 30px;
@@ -42,11 +43,17 @@ const MyIcon = styled.button`
 `;
 
 const MyActionButton = ({ icon, text, type, owner }) => {
+    let refreshTweet = useSelector((state) => {
+        return state.tweetsReducer.refreshTweet;
+    })
     let dispatch = useDispatch();
     return (
         <ActionButton onClick={() => {
             if (type === 'comment') {
                 toggleCommentSec(dispatch, true, owner);
+                setTimeout(() => {
+                    refreshTweets(dispatch, !refreshTweet);
+                }, 3000);
             }
         }} color={type === 'comment' ? '#2bafdc' : type === 'retweet' ? 'green' : type === 'like' ? 'red' : '#2bafdc'} back={type === 'comment' ? '#dcf6ff' : type === 'retweet' ? '#dfffdf' : type === 'like' ? '#ffc5c5' : '#dcf6ff'}>
             <MyIcon id='myIcon'>{icon}</MyIcon>
@@ -62,8 +69,16 @@ const MyActionButton = ({ icon, text, type, owner }) => {
 
 const Tweet = ({ tweet, onlyShown = false }) => {
     const { text, img, dateAdded, owner, id } = tweet;
+    let [commentCount, setCommentCount] = useState('');
 
     let navigate = useNavigate();
+
+    useEffect(() => {
+        getDocs(collection(database, `allTweets/${tweet.id}/comments`))
+            .then((snapshot) => {
+                setCommentCount(snapshot.size);
+            })
+    }, []);
 
     // options
     const [anchorEl, setAnchorEl] = useState(null);
@@ -157,7 +172,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                     }
                     {/* comment retweet like istatistics share */}
                     <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>
-                        <MyActionButton type={'comment'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={'5.283'} />
+                        <MyActionButton type={'comment'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={commentCount} />
                         <MyActionButton type={'retweet'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
                         <MyActionButton type={'like'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={'275,8B'} />
                         <MyActionButton type={'istatistics'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-signal"></i>} />

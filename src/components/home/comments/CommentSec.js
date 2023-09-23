@@ -11,7 +11,7 @@ import database, { auth } from '../../../firebase/firebaseConfig';
 import MoodIcon from '@mui/icons-material/Mood';
 import ImageIcon from '@mui/icons-material/Image';
 import styled from '@emotion/styled';
-import { addDoc, collection, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router';
 import TweetCommentsPage from './TweetCommentsPage';
@@ -56,15 +56,15 @@ const CommentSec = ({ owner }) => {
     };
 
     const randomEmoji = () => {
-        const emojiesList = ['&#x1F600;', '&#x1F601;', '&#x1F602;', '&#x1F603;', '&#x1F604;', '&#x1F605;', '&#x1F606;', '&#x1F606;', '&#x1F607;', '&#x1F608;', '&#x1F609;', '&#x1F60A;', '&#x1F60B;', '&#x1F60C;', '&#x1F60D;', '&#x1F60E;', '&#x1F60F;', '&#x1F610;','&#x1F611;', '&#x1F612;', '&#x1F613;', '&#x1F614;'];
-        let randomNumber = Math.floor(Math.random() * (21) );
+        const emojiesList = ['&#x1F600;', '&#x1F601;', '&#x1F602;', '&#x1F603;', '&#x1F604;', '&#x1F605;', '&#x1F606;', '&#x1F606;', '&#x1F607;', '&#x1F608;', '&#x1F609;', '&#x1F60A;', '&#x1F60B;', '&#x1F60C;', '&#x1F60D;', '&#x1F60E;', '&#x1F60F;', '&#x1F610;', '&#x1F611;', '&#x1F612;', '&#x1F613;', '&#x1F614;'];
+        let randomNumber = Math.floor(Math.random() * (21));
         setText(text + emojiesList[randomNumber]);
         // '/\p{&#x1F600;}+/gu'
     }
 
     const replyTweetFunc = () => {
-        const {displayName, uid, email} = auth.currentUser;
-        addDoc(collection(database, `allTweets/${owner.id}/comments`), {
+        const { displayName, uid, email } = auth.currentUser;
+        let comment = {
             sender: {
                 displayName: displayName,
                 email: email,
@@ -72,11 +72,19 @@ const CommentSec = ({ owner }) => {
             },
             commentText: text,
             dateSended: new Date().getTime()
+        }
+        addDoc(collection(database, `allTweets/${owner.id}/comments`), {
+            ...comment
         })
-        .then((snapshot) => {
-            navigate(`/home/posts/${owner.id}`);
-            toggleCommentSec(dispatch, false, owner);
-        })
+            .then((snapshot) => {
+                setDoc(doc(database, `users/${owner.uid}/tweets/${owner.id}/comments/${snapshot.id}`), {
+                    ...comment
+                })
+            })
+            .then((snapshot) => {
+                navigate(`/home/posts/${owner.id}`);
+                toggleCommentSec(dispatch, false, owner);
+            })
     }
 
     return (
@@ -99,7 +107,7 @@ const CommentSec = ({ owner }) => {
                     <CloseIcon />
                 </IconButton>
 
-                <div style={{ width: "500px", padding: "20px"}}>
+                <div style={{ width: "500px", padding: "20px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <div style={{ marginRight: "10px" }}>
                             <img src={owner.photoURL ? owner.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", position: "relative", zIndex: 100 }} />

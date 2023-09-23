@@ -5,7 +5,7 @@ import { auth } from '../firebase/firebaseConfig'
 
 const RightBar = () => {
   return (
-    <div style={{width: "20%", background: "lightblue"}}>
+    <div style={{width: "25%", background: "lightblue"}}>
       <Button onClick={() => {
         signOut(auth);
       }}>sign out</Button>
