@@ -8,6 +8,8 @@ import styled from '@emotion/styled';
 import database, { auth } from '../../../firebase/firebaseConfig';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { refreshTweets } from '../../../reducers/tweetsReducers/TweetActions';
+import { Tooltip } from '@mui/material';
+import { toast } from 'react-toastify';
 
 const ActionButton = styled.button`
   border-radius: 30px;
@@ -53,6 +55,7 @@ const MyActionButton = ({ icon, text, type, comment }) => {
                         deleteDoc(doc(database, `allTweets/${id}/comments/${comment.id}`))
                             .then(() => {
                                 refreshTweets(dispatch, !refreshTweet);
+                                toast.info('Comment has been deleted!');
                             })
                     })
             }
@@ -85,7 +88,7 @@ const CommentContainer = ({ comment, owner }) => {
                     <p className='m-0'>{commentText}</p>
 
                     {
-                        owner.uid === sender.uid ? <span style={{ fontSize: "12px", display: "inline-block", color: "#3b81e3", position: "absolute", top: "5px", right: "25px" }}><i className="fa-solid fa-anchor"></i></span> : <></>
+                        owner.uid === sender.uid ? <Tooltip title='Owner of tweet'><span style={{ fontSize: "12px", display: "inline-block", color: "#3b81e3", position: "absolute", top: "5px", right: "25px", cursor: "pointer" }}><i className="fa-solid fa-anchor"></i></span></Tooltip> : <></>
                     }
 
                     <div className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>

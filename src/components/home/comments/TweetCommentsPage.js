@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router';
 import Tweet from '../Tweet';
 import { IconButton, TextField } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Skeleton from '../skeleton';
 import CommentContainer from './CommentContainer';
@@ -50,6 +49,7 @@ const TweetCommentsPage = () => {
     useEffect(() => {
         getComments();
         getTweet();
+        window.scrollTo(0, 0);
     }, [refreshTweet]);
 
     if (!allComments || !tweet) {

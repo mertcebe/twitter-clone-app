@@ -1,0 +1,29 @@
+.newsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    padding: 5px;
+    text-decoration: none;
+    color: #000;
+    border-radius: 5px;
+    transition: all 0.05s ease;
+}
+
+.newsContainer:hover {
+    background-color: #efefef;
+}
+
+.showMoreButton {
+    border: none;
+    background: transparent;
+    padding: 4px 10px;
+    color: #5097de;
+    font-size: 12px;
+    transition: all 0.1s ease;
+}
+
+.showMoreButton:hover{
+    color: #000;
+}

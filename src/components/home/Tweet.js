@@ -5,7 +5,7 @@ import style from './style.module.css';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import styled from '@emotion/styled';
-import { collection, deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,25 +43,71 @@ const MyIcon = styled.button`
 `;
 
 const MyActionButton = ({ icon, text, type, owner }) => {
+    let [checked, setChecked] = useState(false);
+    let [disabled, setDisabled] = useState(false);
     let refreshTweet = useSelector((state) => {
         return state.tweetsReducer.refreshTweet;
     })
     let dispatch = useDispatch();
+
+    useEffect(() => {
+        getDoc(doc(database, `users/${auth.currentUser.uid}/myLikes/${owner.id}`))
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    setChecked(true);
+                }
+            })
+    }, []);
+
+    const likeFunc = async (owner) => {
+        setDisabled(true);
+        setTimeout(() => {
+            setDisabled(false);
+        }, 1400);
+        setChecked(!checked);
+        await getDoc(doc(database, `users/${owner.uid}/tweets/${owner.id}`))
+            .then(async (snapshot) => {
+                let allLikes = snapshot.data().likes ? snapshot.data().likes : 0;
+                await updateDoc(doc(database, `users/${owner.uid}/tweets/${owner.id}`), {
+                    likes: !checked ? allLikes + 1 : allLikes - 1
+                })
+                    .then(async () => {
+                        await updateDoc(doc(database, `allTweets/${owner.id}`), {
+                            likes: !checked ? allLikes + 1 : allLikes - 1
+                        })
+                    })
+                    .then(async () => {
+                        if (checked) {
+                            await deleteDoc(doc(database, `users/${auth.currentUser.uid}/myLikes/${owner.id}`))
+                        }
+                        else {
+                            await setDoc(doc(database, `users/${auth.currentUser.uid}/myLikes/${owner.id}`), {
+                                ...snapshot.data(),
+                                likes: !checked ? allLikes + 1 : allLikes - 1
+                            })
+                        }
+                    })
+            })
+    }
+
     return (
-        <ActionButton onClick={() => {
+        <ActionButton disabled={type === 'like' && disabled} style={{ color: type === 'like' && checked && 'red' }} onClick={() => {
             if (type === 'comment') {
                 toggleCommentSec(dispatch, true, owner);
                 setTimeout(() => {
                     refreshTweets(dispatch, !refreshTweet);
                 }, 3000);
             }
+            if (type === 'like') {
+                likeFunc(owner);
+            }
         }} color={type === 'comment' ? '#2bafdc' : type === 'retweet' ? 'green' : type === 'like' ? 'red' : '#2bafdc'} back={type === 'comment' ? '#dcf6ff' : type === 'retweet' ? '#dfffdf' : type === 'like' ? '#ffc5c5' : '#dcf6ff'}>
-            <MyIcon id='myIcon'>{icon}</MyIcon>
+            <MyIcon id='myIcon' style={{ color: type === 'like' && checked && 'red' }}>{icon}</MyIcon>
             {
-                type === 'istatistics' || type === 'share' ?
-                    <></>
-                    :
-                    <small>{text}</small>
+                type === 'istatistics' || type === 'share' ? <></> : <small>{text}</small>
+            }
+            {
+                type === 'like' && <input type="checkbox" id='chForTweetLike' checked={checked} onChange={(e) => { console.log(e.target.checked) }} style={{ display: "none" }} />
             }
         </ActionButton>
     )
@@ -70,6 +116,7 @@ const MyActionButton = ({ icon, text, type, owner }) => {
 const Tweet = ({ tweet, onlyShown = false }) => {
     const { text, img, dateAdded, owner, id } = tweet;
     let [commentCount, setCommentCount] = useState('');
+    let [likesCount, setLikesCount] = useState('');
 
     let navigate = useNavigate();
 
@@ -77,6 +124,10 @@ const Tweet = ({ tweet, onlyShown = false }) => {
         getDocs(collection(database, `allTweets/${tweet.id}/comments`))
             .then((snapshot) => {
                 setCommentCount(snapshot.size);
+            })
+        getDoc(doc(database, `allTweets/${tweet.id}`))
+            .then((snapshot) => {
+                setLikesCount(snapshot.data().likes);
             })
     }, []);
 
@@ -174,7 +225,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                     <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>
                         <MyActionButton type={'comment'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={commentCount} />
                         <MyActionButton type={'retweet'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
-                        <MyActionButton type={'like'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={'275,8B'} />
+                        <MyActionButton type={'like'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={likesCount} />
                         <MyActionButton type={'istatistics'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-signal"></i>} />
                         <MyActionButton type={'share'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-arrow-up-from-bracket"></i>} />
                     </NavLink>
