@@ -88,7 +88,7 @@ const CommentSec = ({ owner }) => {
     }
 
     return (
-        <div>
+        <div style={{position: "fixed"}}>
             <BootstrapDialog
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"
