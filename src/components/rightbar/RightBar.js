@@ -6,11 +6,21 @@ import data from '../data.json';
 import News from '../news/News';
 import style from '../rightbar/style.module.css'
 import SearchIcon from '@mui/icons-material/Search';
-import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
 import defaultProfileImg from '../../images/twitterProfileImg.png';
 import { NavLink } from 'react-router-dom';
 import Skeleton from './skeleton';
 import { toast } from 'react-toastify';
+
+export const sendNotification = (text, type, toWho, sender, post = null) => {
+  addDoc(collection(database, `users/${toWho}/notifications`), {
+    message: text,
+    dateSended: new Date().getTime(),
+    type: type,
+    sender: sender,
+    post: post
+  })
+}
 
 const RightBar = () => {
   let [newsData, setNewsData] = useState();
@@ -71,11 +81,14 @@ const RightBar = () => {
       ...user,
       dateFollowed: new Date().getTime()
     })
-      .then(() => {
-        setDoc(doc(database, `users/${user.uid}/followers/${auth.currentUser.uid}`), {
+      .then(async () => {
+        await setDoc(doc(database, `users/${user.uid}/followers/${auth.currentUser.uid}`), {
           ...myAccount,
           dateFollowed: new Date().getTime()
         });
+      })
+      .then(() => {
+        sendNotification(`${auth.currentUser.displayName} following you!`, 'follow', user.uid, myAccount);
       })
   }
 

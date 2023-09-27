@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import AddPostContainer from './AddPostContainer';
 import TweetsContainer from './TweetsContainer';
 
 
 
 const Home = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div style={{ width: "45%" }}>
       <div style={{ border: "1px solid #efefef", height: "50px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>

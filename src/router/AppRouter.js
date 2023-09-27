@@ -14,6 +14,7 @@ import { auth } from '../firebase/firebaseConfig'
 import TweetCommentsPage from '../components/home/comments/TweetCommentsPage'
 import RightBar from '../components/rightbar/RightBar'
 import ProfilePage from '../components/profile/ProfilePage'
+import NotificationsPage from '../components/notifications'
 
 const AppRouter = () => {
     let { isAuthorized, loading } = useAuthorized();
@@ -33,6 +34,7 @@ const AppRouter = () => {
                         <Route path={`/home`} element={<HomePage />} />
                         <Route path={`/profile/:uid`} element={<ProfilePage />} />
                         <Route path={`/home/posts/:id`} element={<TweetCommentsPage />} />
+                        <Route path={`/notifications`} element={<NotificationsPage />} />
                     </Route>
 
                     <Route element={<PublicRoute isAuthorized={isAuthorized} />}>

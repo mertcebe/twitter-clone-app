@@ -11,10 +11,11 @@ import database, { auth } from '../../../firebase/firebaseConfig';
 import MoodIcon from '@mui/icons-material/Mood';
 import ImageIcon from '@mui/icons-material/Image';
 import styled from '@emotion/styled';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router';
 import TweetCommentsPage from './TweetCommentsPage';
+import { sendNotification } from '../../rightbar/RightBar';
 
 const BootstrapDialog = styledForStyles(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -85,10 +86,23 @@ const CommentSec = ({ owner }) => {
                 navigate(`/home/posts/${owner.id}`);
                 toggleCommentSec(dispatch, false, owner);
             })
+            .then(async () => {
+                const myAccount = {
+                    name: auth.currentUser.displayName,
+                    email: auth.currentUser.email,
+                    uid: auth.currentUser.uid,
+                    photoURL: auth.currentUser.photoURL
+                };
+                const data = {
+                    ...(await getDoc(doc(database, `allTweets/${owner.id}`))).data(),
+                    id: owner.id
+                };
+                sendNotification(`${auth.currentUser.displayName} commented on your tweet! '${text}'`, 'comment', owner.uid, myAccount, data)
+            })
     }
 
     return (
-        <div style={{position: "fixed"}}>
+        <div style={{ position: "fixed" }}>
             <BootstrapDialog
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"

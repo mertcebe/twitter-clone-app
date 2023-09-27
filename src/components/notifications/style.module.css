@@ -1,0 +1,16 @@
+.SingleNotificationContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    transition: all 0.1s ease;
+}
+
+.SingleNotificationContainer:hover{
+    background-color: #f1f1f1;
+}
+
+.singleNotificationNavLink{
+    text-decoration: none;
+    color: #000;
+}

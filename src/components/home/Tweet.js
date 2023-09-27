@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleCommentSec } from '../../reducers/commentReducers/CommentActions';
 import { refreshTweets } from '../../reducers/tweetsReducers/TweetActions';
+import { sendNotification } from '../rightbar/RightBar';
 
 const ActionButton = styled.button`
   border-radius: 30px;
@@ -42,7 +43,7 @@ const MyIcon = styled.button`
   margin-right: 5px;
 `;
 
-const MyActionButton = ({ icon, text, type, owner }) => {
+const MyActionButton = ({ icon, text, type, owner, tweet }) => {
     let [checked, setChecked] = useState(false);
     let [disabled, setDisabled] = useState(false);
     let refreshTweet = useSelector((state) => {
@@ -88,6 +89,17 @@ const MyActionButton = ({ icon, text, type, owner }) => {
                         }
                     })
             })
+            .then(() => {
+                const myAccount = {
+                    name: auth.currentUser.displayName,
+                    email: auth.currentUser.email,
+                    uid: auth.currentUser.uid,
+                    photoURL: auth.currentUser.photoURL
+                };
+                if (!checked) {
+                    sendNotification(`${auth.currentUser.displayName} liked your tweet!`, 'like', owner.uid, myAccount, tweet)
+                }
+            })
     }
 
     return (
@@ -117,6 +129,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
     const { text, img, dateAdded, owner, id } = tweet;
     let [commentCount, setCommentCount] = useState('');
     let [likesCount, setLikesCount] = useState('');
+    let [textSize, setTextSize] = useState(200);
 
     let navigate = useNavigate();
 
@@ -173,7 +186,25 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                                 </>
                         }
                     </div>
-                    <p className='m-0'>{text}</p>
+                    <p className='m-0'>{onlyShown ? text : text.slice(0, textSize)}</p>
+                    {
+                        !onlyShown &&
+                        <>
+                            {
+                                text.length > 200 &&
+                                <>
+                                    {
+                                        text.length >= textSize &&
+                                        <NavLink to={''} style={{ textDecoration: "none", color: "#000" }}>
+                                            <button onClick={() => {
+                                                setTextSize(textSize + 200);
+                                            }} style={{ background: "transparent", border: "none", color: "grey", fontSize: "12px", display: "inline-block", padding: "0", margin: "0" }}>read more</button>
+                                        </NavLink>
+                                    }
+                                </>
+                            }
+                        </>
+                    }
                     <IconButton
                         style={{ position: "absolute", top: "5px", right: "10px" }}
                         aria-label="more"
@@ -223,11 +254,11 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                     }
                     {/* comment retweet like istatistics share */}
                     <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>
-                        <MyActionButton type={'comment'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={commentCount} />
-                        <MyActionButton type={'retweet'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
-                        <MyActionButton type={'like'} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={likesCount} />
-                        <MyActionButton type={'istatistics'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-signal"></i>} />
-                        <MyActionButton type={'share'} owner={{ ...owner, id }} icon={<i className="fa-solid fa-arrow-up-from-bracket"></i>} />
+                        <MyActionButton type={'comment'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={commentCount} />
+                        <MyActionButton type={'retweet'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
+                        <MyActionButton type={'like'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={likesCount} />
+                        <MyActionButton type={'istatistics'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-solid fa-signal"></i>} />
+                        <MyActionButton type={'share'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-solid fa-arrow-up-from-bracket"></i>} />
                     </NavLink>
                 </div>
             </div>
