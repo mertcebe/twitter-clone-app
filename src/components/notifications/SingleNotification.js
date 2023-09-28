@@ -6,6 +6,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import style from './style.module.css'
 import { NavLink } from 'react-router-dom'
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import { deleteDoc, doc } from 'firebase/firestore'
+import database, { auth } from '../../firebase/firebaseConfig'
+import { useDispatch, useSelector } from 'react-redux'
+import { refreshNotificationsFunc } from '../../reducers/notificationsReducers/NotificationsActions'
 
 const NotificationType = ({ type }) => {
     return (
@@ -24,8 +28,20 @@ const NotificationType = ({ type }) => {
 }
 
 const SingleNotification = ({ notification }) => {
+    const refreshNotifications = useSelector((state) => {
+        return state.notificationReducer.refreshNotifications;
+    })
+    let dispatch = useDispatch();
+
+    const deleteNotification = () => {
+        deleteDoc(doc(database, `users/${auth.currentUser.uid}/notifications/${notification.id}`))
+            .then(() => {
+                refreshNotificationsFunc(dispatch, !refreshNotifications);
+            })
+    }
+
     return (
-        <div className={style.SingleNotificationContainer}>
+        <div className={style.SingleNotificationContainer} id={notification.id}>
             <div style={{ display: "flex", alignItems: "flex-start" }}>
                 <div style={{ margin: "auto 0", marginRight: "10px" }}>
                     {
@@ -52,14 +68,14 @@ const SingleNotification = ({ notification }) => {
                             notification.post.img ?
                                 <img src={notification.post.img.src} alt="" style={{ height: "36px" }} />
                                 :
-                                <DriveFileMoveIcon sx={{color: "#000"}} />
+                                <DriveFileMoveIcon sx={{ color: "#000" }} />
                         }
                     </NavLink>
                 }
             </div>
 
             <div>
-                <IconButton>
+                <IconButton onClick={deleteNotification}>
                     <DeleteIcon />
                 </IconButton>
             </div>

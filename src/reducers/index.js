@@ -4,6 +4,8 @@ import {Provider} from 'react-redux'
 import SignInReducer from './signInReducers/SignInReducer'
 import CommentReducer from './commentReducers/CommentReducer'
 import TweetReducer from './tweetsReducers/TweetReducer'
+import NotificationReducer from './notificationsReducers/NotificationsReducer'
+import ProfileReducer from './profileReducers/ProfileReducer'
 
 
 const AppReducer = ({children}) => {
@@ -11,7 +13,9 @@ const AppReducer = ({children}) => {
         combineReducers({
             signInReducer: SignInReducer,
             commentReducer: CommentReducer,
-            tweetsReducer: TweetReducer
+            tweetsReducer: TweetReducer,
+            notificationReducer: NotificationReducer,
+            profileReducer: ProfileReducer
         })
     )
 

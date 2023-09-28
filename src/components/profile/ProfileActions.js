@@ -31,3 +31,41 @@ export const getUserTweets = async (uid) => {
             })
     })
 }
+
+export const getFollowers = async (uid) => {
+    return new Promise((resolve, reject) => {
+        getDocs(query(collection(database, `users/${uid}/followers`)))
+            .then((snapshot) => {
+                let followers = [];
+                snapshot.forEach((item) => {
+                    followers.push({
+                        ...item.data(),
+                        id: item.id
+                    });
+                })
+                resolve(followers);
+            })
+            .catch((error) => {
+                reject(error);
+            })
+    })
+}
+
+export const getFollowings = async (uid) => {
+    return new Promise((resolve, reject) => {
+        getDocs(query(collection(database, `users/${uid}/followings`)))
+            .then((snapshot) => {
+                let followers = [];
+                snapshot.forEach((item) => {
+                    followers.push({
+                        ...item.data(),
+                        id: item.id
+                    });
+                })
+                resolve(followers);
+            })
+            .catch((error) => {
+                reject(error);
+            })
+    })
+}

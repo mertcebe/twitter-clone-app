@@ -5,13 +5,19 @@ import style from './style.module.css'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import SingleNotification from './SingleNotification';
+import { useSelector } from 'react-redux';
 
 const NotificationsPage = () => {
     let [notifications, setNotifications] = useState();
     const [value, setValue] = useState('all');
 
+    const refreshNotifications = useSelector((state) => {
+        return state.notificationReducer.refreshNotifications;
+    })
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
+        window.scrollTo(0, 0);
     };
 
     useEffect(() => {
@@ -27,7 +33,8 @@ const NotificationsPage = () => {
                 setNotifications(items);
             })
         window.scrollTo(0, 0);
-    }, []);
+        console.log('qweqweqweqwe')
+    }, [refreshNotifications]);
 
     if (!notifications) {
         return (
@@ -35,7 +42,7 @@ const NotificationsPage = () => {
         )
     }
     return (
-        <div style={{ width: "45%", border: "1px solid #efefef" }}>
+        <div style={{ width: "45%", position: "relative" }}>
             <div style={{ border: "1px solid #efefef", height: "50px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>
                 <h5 className='d-inline-block mt-1' style={{ width: "100%", height: "40px", lineHeight: "40px", cursor: "pointer" }} onClick={() => {
                     window.scrollTo(0, 0);
@@ -43,7 +50,7 @@ const NotificationsPage = () => {
                     <b className='d-block'>Notifications</b>
                 </h5>
             </div>
-            <Box sx={{ width: '100%', display: "flex", alignItems: "center" }}>
+            <Box sx={{ width: '100%', display: "flex", alignItems: "center", position: "sticky", top: "50px", background: "#fff", zIndex: "100" }}>
                 <Tabs
                     style={{ width: "90%" }}
                     value={value}
