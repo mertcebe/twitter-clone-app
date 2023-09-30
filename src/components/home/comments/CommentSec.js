@@ -124,7 +124,7 @@ const CommentSec = ({ owner }) => {
                 <div style={{ width: "500px", padding: "20px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <div style={{ marginRight: "10px" }}>
-                            <img src={owner.photoURL ? owner.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", position: "relative", zIndex: 100 }} />
+                            <img src={owner.profileImg ? owner.profileImg.src : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", position: "relative", zIndex: 100 }} />
                         </div>
                         <small style={{ marginRight: "6px" }}><b>{owner.name}</b></small>
                         <small>@{owner.email}</small>

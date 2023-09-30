@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleCommentSec } from '../../reducers/commentReducers/CommentActions';
 import { refreshTweets } from '../../reducers/tweetsReducers/TweetActions';
 import { sendNotification } from '../rightbar/RightBar';
+import { getProfile } from '../profile/ProfileActions';
+import Skeleton from './skeleton';
 
 const ActionButton = styled.button`
   border-radius: 30px;
@@ -126,14 +128,20 @@ const MyActionButton = ({ icon, text, type, owner, tweet }) => {
 }
 
 const Tweet = ({ tweet, onlyShown = false }) => {
-    const { text, img, dateAdded, owner, id } = tweet;
+    const { text, img, dateAdded, owner: prevOwner, id } = tweet;
+
     let [commentCount, setCommentCount] = useState('');
     let [likesCount, setLikesCount] = useState('');
     let [textSize, setTextSize] = useState(200);
+    let [owner, setOwner] = useState();
 
     let navigate = useNavigate();
 
     useEffect(() => {
+        getProfile(prevOwner.uid)
+            .then((snapshot) => {
+                setOwner(snapshot);
+            })
         getDocs(collection(database, `allTweets/${tweet.id}/comments`))
             .then((snapshot) => {
                 setCommentCount(snapshot.size);
@@ -165,11 +173,20 @@ const Tweet = ({ tweet, onlyShown = false }) => {
             })
     }
 
+    if (!owner) {
+        return (
+            Array.from([1, 2, 3]).map((item) => {
+                return (
+                    <Skeleton hasImg={true} />
+                )
+            })
+        )
+    }
     return (
         <Link to={`/home/posts/${id}`} style={{ textDecoration: "none", color: "#000" }}>
             <div className={`d-flex align-items-start ${style.tweetContainer}`}>
                 <div style={{ marginRight: "10px" }}>
-                    <img src={owner.photoURL ? owner.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "5px" }} />
+                    <img src={owner.profileImg ? owner.profileImg.src : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "5px" }} />
                 </div>
                 <div>
                     <div>

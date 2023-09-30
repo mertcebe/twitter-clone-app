@@ -5,15 +5,17 @@ import database, { auth } from '../../firebase/firebaseConfig';
 import { getFollowers, getFollowings, getProfile, getUserTweets } from './ProfileActions';
 import defaultBackImg from '../../images/twitterDefaultBackImg.jpg';
 import defaultProfileImg from '../../images/twitterProfileImg.png';
-import { Box, IconButton, Tab, Tabs } from '@mui/material';
+import { Box, Fade, IconButton, Tab, Tabs } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import style from './style.module.css';
 import Moment from 'react-moment';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Tweet from '../home/Tweet';
 import { sendNotification } from '../rightbar/RightBar';
 import { toggleEditSec } from '../../reducers/profileReducers/ProfileActions';
 import { useDispatch } from 'react-redux';
+import Loading from '../Loading';
+import LinkIcon from '@mui/icons-material/Link';
 
 const ShortInfo = ({ icon, text, type }) => {
     if (typeof icon === 'string') {
@@ -56,10 +58,6 @@ const ProfilePage = () => {
     }
 
     const followFunc = (user) => {
-        // document.getElementById(`followBtn-${user.uid}`).disabled = true;
-        // document.getElementById(`followBtn-${user.uid}`).style.opacity = 0.5;
-        // document.getElementById(`followBtn-${user.uid}`).innerHTML = 'Following';
-
         const myAccount = {
             name: auth.currentUser.displayName,
             email: auth.currentUser.email,
@@ -144,7 +142,7 @@ const ProfilePage = () => {
 
     if (!user || !tweets || !followers || !followings || !myFollowings) {
         return (
-            <h5>loading...</h5>
+            <Loading />
         )
     }
     return (
@@ -164,8 +162,8 @@ const ProfilePage = () => {
             </div>
 
             <div style={{ width: "100%", position: "relative" }}>
-                <img src={user.backImg ? user.backImg : defaultBackImg} alt="" style={{ width: "100%", height: "200px" }} />
-                <img src={user.photoURL ? user.photoURL : defaultProfileImg} alt="" style={{ width: "140px", height: "140px", borderRadius: "10px", border: "5px solid #fff", position: "absolute", top: "130px", left: "14px" }} />
+                <img src={user.backImg ? user.backImg.src : defaultBackImg} alt="" style={{ width: "100%", height: "200px" }} />
+                <img src={user.profileImg ? user.profileImg.src : defaultProfileImg} alt="" style={{ width: "140px", height: "140px", borderRadius: "10px", border: "5px solid #fff", position: "absolute", top: "130px", left: "14px" }} />
             </div>
 
             <div style={{ textAlign: "end", width: "100%", height: "80px" }}>
@@ -196,9 +194,24 @@ const ProfilePage = () => {
                     <small className='d-block text-muted m-0'>{user.email}</small>
                 </div>
                 <div>
-                    <p className='m-0'>{user.description}</p>
-                    <p className='m-0'><i className="fa-solid fa-location-dot text-muted"></i>{user.location}</p>
-                    <ShortInfo icon={<i className="fa-solid fa-calendar-days text-muted"></i>} text={`Joined on ${new Date(user.dateAdded).toDateString()}`} />
+                    {
+                        user.description &&
+                        <p className='m-0 mb-2' style={{ wordBreak: "break-word" }}>{user.description.split(' ').map((item) => {
+                            if (item.startsWith('#')) {
+                                return (
+                                    <span><Link to={`/search?q=${item.replace('#', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
+                                )
+                            }
+                            return (
+                                <span>{item} </span>
+                            )
+                        })}</p>
+                    }
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        {user.location && <p className='text-muted' style={{ margin: "0 10px 0 0" }}><i className="fa-solid fa-location-dot" style={{ color: "grey" }}></i> {user.location}</p>}
+                        {user.tag && <p className='m-0'><LinkIcon sx={{ color: "grey", transform: "rotate(-45deg)" }} /> <Link to={user.tag} style={{ textDecoration: "none", color: "#1d9bf0" }}>{user.tag.replace('https://', '').replace('http://', '').replace('www.', '')}</Link></p>}
+                    </div>
+                    <ShortInfo icon={<i className="fa-solid fa-calendar-days" style={{ color: "grey" }}></i>} text={`Joined on ${new Date(user.dateAdded).toDateString()}`} />
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "220px", margin: "10px 0" }}>
                         <ShortInfo icon={`${followings.length}`} text={'Following'} type={'following'} />
                         <ShortInfo icon={`${followers.length}`} text={'Followers'} type={'followers'} />
@@ -226,15 +239,17 @@ const ProfilePage = () => {
             <div>
                 {
                     value === 'tweets' &&
-                    <div>
-                        {
-                            tweets.map((tweet) => {
-                                return (
-                                    <Tweet tweet={{ ...tweet, owner: user }} />
-                                )
-                            })
-                        }
-                    </div>
+                    <Fade in={value} {...(value ? { timeout: 500 } : {})}>
+                        <div>
+                            {
+                                tweets.map((tweet) => {
+                                    return (
+                                        <Tweet tweet={{ ...tweet, owner: user }} />
+                                    )
+                                })
+                            }
+                        </div>
+                    </Fade>
                 }
                 {
                     value === 'two' && <h5>two</h5>

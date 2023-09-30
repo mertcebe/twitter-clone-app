@@ -40,7 +40,7 @@ const SideBar = () => {
   };
 
   return (
-    <div className='shadow sidebar' style={{ width: "20%", padding: "10px", position: "sticky", top: "0" }}>
+    <div className='sidebar' style={{ width: "20%", padding: "10px", position: "sticky", top: "0" }}>
       <NavLink to={'/home'} style={{ textDecoration: "none" }}><img src={twitterNewLogo} alt="" style={{ width: "30px", pointerEvents: "none" }} /></NavLink>
       <ul className='sidebarUl' style={{ listStyle: "none", margin: "0", padding: "0", marginTop: "40px" }}>
         <NavLink className='sidebarMenuItem' to={'/home'} style={{ padding: "5px 0px", textDecoration: "none", color: "#454545", fontSize: "18px", margin: "10px 0", display: "flex", alignItems: "center" }}><HomeIcon sx={{ marginRight: "10px", width: "30px" }} />Home</NavLink>
@@ -74,6 +74,7 @@ const SideBar = () => {
             handleClose();
             signOut(auth);
           }}><span>Sign out</span><i className="fa-solid fa-right-from-bracket"></i></MenuItem>
+          <MenuItem sx={{ minWidth: "200px", display: "flex", justifyContent: "space-between", alignItems: "center" }}><span>Settings</span><i className="fa-solid fa-gear"></i></MenuItem>
         </Menu>
       </ul>
       <MyColoredButton>Tweet</MyColoredButton>

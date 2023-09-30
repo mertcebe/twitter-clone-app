@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import profileImg from '../../../images/twitterProfileImg.png';
 import style from './style.module.css';
@@ -10,6 +10,7 @@ import { deleteDoc, doc } from 'firebase/firestore';
 import { refreshTweets } from '../../../reducers/tweetsReducers/TweetActions';
 import { Tooltip } from '@mui/material';
 import { toast } from 'react-toastify';
+import { getProfile } from '../../profile/ProfileActions';
 
 const ActionButton = styled.button`
   border-radius: 30px;
@@ -72,15 +73,30 @@ const MyActionButton = ({ icon, text, type, comment }) => {
 }
 
 const CommentContainer = ({ comment, owner }) => {
-    const { commentText, dateSended, sender } = comment;
+    const { commentText, dateSended, sender:prevSender } = comment;
+    let [sender, setSender] = useState();
+
+    useEffect(() => {
+        console.log(prevSender, owner);
+        getProfile(prevSender.uid)
+        .then((snapshot) => {
+            setSender(snapshot);
+        })
+    }, []);
+
+    if(!sender){
+        return (
+            <></>
+        )
+    }
     return (
         <div style={{ marginBottom: "20px", borderTop: "1px solid #efefef", paddingTop: "10px" }}>
             <div style={{ display: "flex", alignItems: "flex-start" }}>
                 <div style={{ marginRight: "10px" }}>
-                    <img src={sender.photoURL ? sender.photoURL : profileImg} alt="" style={{ width: "30px", height: "30px", borderRadius: "5px" }} />
+                    <img src={sender.profileImg ? sender.profileImg.src : profileImg} alt="" style={{ width: "30px", height: "30px", borderRadius: "5px" }} />
                 </div>
                 <div className='w-100' style={{ position: "relative" }}>
-                    <NavLink to={`/profile/${sender.uid}`} className={style.tweetOwnerName}><b>{sender.displayName}</b></NavLink>
+                    <NavLink to={`/profile/${sender.uid}`} className={style.tweetOwnerName}><b>{sender.displayName?sender.displayName:sender.name}</b></NavLink>
                     <NavLink to={`/profile/${sender.uid}`} className={style.tweetOwnerEmail}>@{sender.email}</NavLink>
                     <span style={{ position: "relative" }}><i className="fa-solid fa-circle" style={{ fontSize: "3px", position: "absolute", top: "55%", left: "-5px", color: "grey" }}></i></span>
                     <span><small><Moment fromNow>{dateSended}</Moment></small></span>

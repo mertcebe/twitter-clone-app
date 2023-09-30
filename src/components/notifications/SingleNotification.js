@@ -44,9 +44,7 @@ const SingleNotification = ({ notification }) => {
         <div className={style.SingleNotificationContainer} id={notification.id}>
             <div style={{ display: "flex", alignItems: "flex-start" }}>
                 <div style={{ margin: "auto 0", marginRight: "10px" }}>
-                    {
-                        <NotificationType type={notification.type} />
-                    }
+                    <NotificationType type={notification.type} />
                 </div>
                 <div style={{ marginRight: "10px" }}>
                     <NavLink className={style.singleNotificationNavLink} to={`/profile/${notification.sender.uid}`}>

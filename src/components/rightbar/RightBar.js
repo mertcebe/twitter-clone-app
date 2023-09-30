@@ -75,15 +75,16 @@ const RightBar = () => {
       uid: auth.currentUser.uid,
       photoURL: auth.currentUser.photoURL
     };
+    let date = new Date().getTime();
 
     setDoc(doc(database, `users/${auth.currentUser.uid}/followings/${user.uid}`), {
       ...user,
-      dateFollowed: new Date().getTime()
+      dateFollowed: date
     })
       .then(async () => {
         await setDoc(doc(database, `users/${user.uid}/followers/${auth.currentUser.uid}`), {
           ...myAccount,
-          dateFollowed: new Date().getTime()
+          dateFollowed: date
         });
       })
       .then(() => {
@@ -144,7 +145,7 @@ const RightBar = () => {
             return (
               <div className={style.userContainer} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderRadius: "5px", padding: "10px 5px", marginBottom: "5px" }}>
                 <NavLink to={`/profile/${user.uid}`} style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "#000", width: "100%" }}>
-                  <img src={user.photoURL ? user.photoURL : defaultProfileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px", pointerEvents: "none" }} />
+                  <img src={user.profileImg ? user.profileImg.src : defaultProfileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px", pointerEvents: "none" }} />
                   <div>
                     <b style={{ fontSize: "14px" }}>{user.name}</b>
                     <small className='d-block text-muted' style={{ fontSize: "12px" }}>{user.email}</small>
