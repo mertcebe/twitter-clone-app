@@ -68,8 +68,10 @@ const ExplorePage = () => {
     }
 
     useEffect(() => {
-        getTweetsByTags();
-        getUsers();
+        if (searchParams) {
+            getTweetsByTags();
+            getUsers();
+        }
     }, [searchParams]);
 
     // tabs section
