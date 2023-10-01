@@ -1,0 +1,14 @@
+.followBtn {
+    padding: 2px 16px;
+    background: #1d9bf0;
+    color: #fff;
+    font-family: sans-serif;
+    border-radius: 40px;
+    border: none;
+    margin: 10px;
+    font-size: 12px;
+}
+
+.followBtn:hover {
+    opacity: 0.86;
+}

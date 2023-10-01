@@ -131,7 +131,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
     const { text, img, dateAdded, owner: prevOwner, id } = tweet;
 
     let [commentCount, setCommentCount] = useState('');
-    let [likesCount, setLikesCount] = useState('');
+    let [likesCount, setLikesCount] = useState(0);
     let [textSize, setTextSize] = useState(200);
     let [owner, setOwner] = useState();
 
@@ -203,7 +203,41 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                                 </>
                         }
                     </div>
-                    <p className='m-0'>{onlyShown ? text : text.slice(0, textSize)}</p>
+                    {/* <p className='m-0'>{onlyShown ? text : text.slice(0, textSize)}</p> */}
+                    {
+                        onlyShown ?
+                            <>
+                                {
+                                    text &&
+                                    <p className='m-0 mb-2' style={{ wordBreak: "break-word" }}>{text.split(' ').map((item) => {
+                                        if (item.startsWith('#')) {
+                                            return (
+                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
+                                            )
+                                        }
+                                        return (
+                                            <span>{item} </span>
+                                        )
+                                    })}</p>
+                                }
+                            </>
+                            :
+                            <>
+                                {
+                                    text.slice(0, textSize) &&
+                                    <p className='m-0 mb-2' style={{ wordBreak: "break-word" }}>{text.slice(0, textSize).split(' ').map((item) => {
+                                        if (item.startsWith('#')) {
+                                            return (
+                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
+                                            )
+                                        }
+                                        return (
+                                            <span>{item} </span>
+                                        )
+                                    })}</p>
+                                }
+                            </>
+                    }
                     {
                         !onlyShown &&
                         <>

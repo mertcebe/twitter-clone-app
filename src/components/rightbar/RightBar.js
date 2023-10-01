@@ -27,7 +27,7 @@ const RightBar = () => {
   let [users, setUsers] = useState();
   let [sizeForNews, setSizeForNews] = useState(4);
   let [sizeForUsers, setSizeForUsers] = useState(4);
-  let [searchText, setSearchText] = useState(4);
+  let [searchText, setSearchText] = useState();
 
   const getNews = (searchText) => {
     setSizeForNews(4);
