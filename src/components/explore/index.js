@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import database from '../../firebase/firebaseConfig';
 import Tweet from '../home/Tweet';
 import SingleExploreContainer from './SingleExploreContainer';
+import SingleExploreImgContainer from './SingleExploreImgContainer';
 
 const Title = ({ title }) => {
     return (
@@ -19,6 +20,7 @@ const ExplorePage = () => {
     let [searchText, setSearchText] = useState();
     let [searchByTags, setSearchByTags] = useState();
     let [searchByUser, setSearchByUser] = useState();
+    let [searchByPhoto, setSearchByPhoto] = useState();
 
     const [searchList] = useSearchParams();
     const searchParams = searchList.get('q');
@@ -67,23 +69,47 @@ const ExplorePage = () => {
             })
     }
 
+    const getPhotos = () => {
+        getDocs(query(collection(database, `allTweets`)))
+            .then((snapshot) => {
+                let photos = [];
+                snapshot.forEach((photo) => {
+                    if (photo.data().img?.name.split('.')[0].toLowerCase().includes(`${searchParams.toLowerCase()}`)) {
+                        photos.push({
+                            ...photo.data(),
+                            id: photo.id
+                        })
+                    }
+                })
+                console.log(photos)
+                setSearchByPhoto(photos);
+            })
+    }
+
     useEffect(() => {
         if (searchParams) {
             getTweetsByTags();
             getUsers();
+            getPhotos();
         }
     }, [searchParams]);
 
     // tabs section
     const [value, setValue] = useState('top');
     const handleChange = (event, newValue) => {
-        setValue(newValue);
+        if (!searchParams) {
+            setValue('top');
+        }
+        else {
+            setValue(newValue);
+        }
+        window.scrollTo(0, 0);
     };
 
     return (
         <div style={{ width: "45%" }}>
             {/* search bar */}
-            <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: "0" }}>
+            <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: "0", background: "#fff" }}>
                 <div style={{ width: "5%" }}>
                     <IconButton onClick={() => {
                         navigate('/home');
@@ -104,7 +130,7 @@ const ExplorePage = () => {
                 </div>
             </div>
 
-            <Box sx={{ width: '100%', borderBottom: "1px solid #dfdfdf" }}>
+            <Box sx={{ width: '100%', borderBottom: "1px solid #dfdfdf", position: "sticky", top: "64px", background: "#fff" }}>
                 <Tabs
                     centered
                     value={value}
@@ -125,8 +151,6 @@ const ExplorePage = () => {
                     value === 'top' &&
                     <Fade in={value} {...(value ? { timeout: 500 } : {})}>
                         <div>
-                            top
-
                             <Title title={'Tags'} />
                             {
                                 searchByTags ?
@@ -186,7 +210,6 @@ const ExplorePage = () => {
                     value === 'people' &&
                     <Fade in={value} {...(value ? { timeout: 500 } : {})}>
                         <div>
-                            people
                             {
                                 searchByUser ?
                                     <>
@@ -194,6 +217,35 @@ const ExplorePage = () => {
                                             searchByUser.map((tweet) => {
                                                 return (
                                                     <SingleExploreContainer tweet={tweet} type={'people'} />
+                                                )
+                                            })
+                                        }
+                                    </>
+                                    :
+                                    <></>
+                            }
+                        </div>
+                    </Fade>
+                }
+                {
+                    value === 'tweet' &&
+                    <Fade in={value} {...(value ? { timeout: 500 } : {})}>
+                        <div>
+                            tweets
+                        </div>
+                    </Fade>
+                }
+                {
+                    value === 'photos' &&
+                    <Fade in={value} {...(value ? { timeout: 500 } : {})}>
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                            {
+                                searchByPhoto ?
+                                    <>
+                                        {
+                                            searchByPhoto.map((tweet) => {
+                                                return (
+                                                    <SingleExploreImgContainer tweet={tweet} />
                                                 )
                                             })
                                         }

@@ -31,7 +31,7 @@ const SingleExploreContainer = ({ tweet, type }) => {
         )
     }
     return (
-        <NavLink to={`/home/posts/${tweet.id}`} className='d-flex align-items-start shadow' style={{ textDecoration: "none", color: "#000", padding: "10px" }}>
+        <NavLink to={`/home/posts/${tweet.id}`} className='d-flex align-items-start shadow-sm' style={{ textDecoration: "none", color: "#000", padding: "10px" }}>
             <div style={{ marginRight: "5px" }}>
                 <img src={tweet.owner.profileImg.src} alt="" style={{ width: "50px", height: "50px", borderRadius: "50%", pointerEvents: "none" }} />
             </div>
