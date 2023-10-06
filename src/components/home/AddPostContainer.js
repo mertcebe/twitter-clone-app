@@ -46,12 +46,19 @@ const AddPostContainer = () => {
             email: auth.currentUser.email,
             uid: auth.currentUser.uid
         };
+        let myTags = [];
+        text.split(' ').map((word) => {
+            if (word.startsWith('#')) {
+                myTags.push(word.replace('#', '').replace('.', ''));
+            }
+        })
         if (file) {
             setIsSelectedImage(true);
             uploadImageToStorage(file, auth.currentUser.uid)
                 .then((snapshot) => {
                     let tweet = {
                         text: text,
+                        tags: myTags,
                         img: snapshot,
                         dateAdded: new Date().getTime()
                     }
@@ -72,6 +79,7 @@ const AddPostContainer = () => {
             setIsSelectedImage(false);
             let tweet = {
                 text: text,
+                tags: myTags,
                 img: null,
                 dateAdded: new Date().getTime()
             };

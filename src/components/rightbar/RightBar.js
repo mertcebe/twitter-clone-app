@@ -28,6 +28,7 @@ const RightBar = () => {
   let [sizeForNews, setSizeForNews] = useState(4);
   let [sizeForUsers, setSizeForUsers] = useState(4);
   let [searchText, setSearchText] = useState();
+  let [trends, setTrends] = useState([]);
 
   const getNews = (searchText) => {
     setSizeForNews(4);
@@ -92,12 +93,51 @@ const RightBar = () => {
       })
   }
 
+  const getTrends = () => {
+    getDocs(query(collection(database, `allTweets`)))
+      .then((snapshot) => {
+        let tags = [];
+        snapshot.forEach((tweet) => {
+          if (tweet.data().tags) {
+            if (tweet.data().tags.length !== 0) {
+              tags.push(...tweet.data().tags)
+            }
+          }
+        })
+        let newTags = [];
+        tags.forEach((tag) => {
+          let result = {
+            value: false,
+            index: ''
+          };
+          newTags.forEach((eachTag, tagIndex) => {
+            if (tag === eachTag.text) {
+              result.value = true;
+              result.index = tagIndex;
+            }
+          })
+          if (result.value) {
+            newTags[result.index].size += 1;
+
+          }
+          else {
+            newTags.push({
+              text: tag,
+              size: 1
+            });
+          }
+        })
+        setTrends(newTags);
+      })
+  }
+
   useEffect(() => {
     getNews('technology');
     getUsers();
+    getTrends()
   }, []);
 
-  if (!newsData || !users) {
+  if (!newsData || !users || !trends) {
     return (
       <div style={{ width: "25%" }}>
         <Skeleton />
@@ -119,7 +159,18 @@ const RightBar = () => {
 
       {/* news */}
       <div style={{ background: "#f9f9f9", padding: "14px", marginBottom: "20px" }}>
-        <p className='m-0 mb-2' style={{ fontSize: "18px" }}><b>Whats happening</b></p>
+        <p className='m-0 mb-2' style={{ fontSize: "18px" }}><b>Trends</b></p>
+        {
+          trends.map((data) => {
+            return (
+              <div style={{margin: "0 0 20px 0"}}>
+                <NavLink to={`/search?q=${data.text}`} style={{ display: "block", margin: "0", textDecoration: "none", color: "#1d9bf0" }}><b>#{data.text}</b></NavLink>
+                <small className='text-muted' style={{fontSize: "12px", margin: "0"}}>{data.size} tweets</small>
+              </div>
+            )
+          })
+        }
+        <p className='m-0 mb-2 mt-4' style={{ fontSize: "18px" }}><b>Whats happening</b></p>
         {
           newsData.slice(0, sizeForNews).map((data) => {
             return (

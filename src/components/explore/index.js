@@ -1,7 +1,7 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Fade, IconButton, Tab, Tabs, TextField } from '@mui/material';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
@@ -21,6 +21,7 @@ const ExplorePage = () => {
     let [searchByTags, setSearchByTags] = useState();
     let [searchByUser, setSearchByUser] = useState();
     let [searchByPhoto, setSearchByPhoto] = useState();
+    let [searchByText, setSearchByText] = useState();
 
     const [searchList] = useSearchParams();
     const searchParams = searchList.get('q');
@@ -54,6 +55,31 @@ const ExplorePage = () => {
             })
     }
 
+    const getTopTweets = () => {
+        getDocs(query(collection(database, `allTweets`)), orderBy('dateAdded', 'asc'))
+            .then((snapshot) => {
+                let tweets = [];
+                snapshot.forEach((tweet) => {
+                    let tags = [];
+                    tweet.data().text.split(' ').map((word) => {
+                        if (word.startsWith('#')) {
+                            tags.push(word.replace('#', '').replace('.', ''));
+                        }
+                    })
+                    getDoc(doc(database, `users/${tweet.data().owner.uid}`))
+                        .then((snapshotForUser) => {
+                            tweets.push({
+                                ...tweet.data(),
+                                owner: snapshotForUser.data(),
+                                id: tweet.id,
+                                tags: tags
+                            })
+                        })
+                })
+                setSearchByTags(tweets);
+            })
+    }
+
     const getUsers = () => {
         getDocs(query(collection(database, `users`)))
             .then((snapshot) => {
@@ -81,8 +107,35 @@ const ExplorePage = () => {
                         })
                     }
                 })
-                console.log(photos)
                 setSearchByPhoto(photos);
+            })
+    }
+
+    const getTweetsByText = () => {
+        getDocs(query(collection(database, `allTweets`)))
+            .then((snapshot) => {
+                let tweets = [];
+                snapshot.forEach((tweet) => {
+                    let tags = [];
+                    tweet.data().text.split(' ').map((word) => {
+                        if (word.startsWith('#')) {
+                            tags.push(word.replace('#', '').replace('.', ''));
+                        }
+                    })
+                    if (tweet.data().text.includes(searchParams)) {
+                        getDoc(doc(database, `users/${tweet.data().owner.uid}`))
+                            .then((snapshotForUser) => {
+                                tweets.push({
+                                    ...tweet.data(),
+                                    owner: snapshotForUser.data(),
+                                    id: tweet.id,
+                                    tags: tags
+                                })
+                            })
+                    }
+                })
+                console.log(tweets)
+                setSearchByText(tweets);
             })
     }
 
@@ -91,6 +144,12 @@ const ExplorePage = () => {
             getTweetsByTags();
             getUsers();
             getPhotos();
+            getTweetsByText();
+        }
+        else {
+            document.getElementById('exploreInput').value = '';
+            getTopTweets();
+            setSearchByUser();
         }
     }, [searchParams]);
 
@@ -125,7 +184,7 @@ const ExplorePage = () => {
                         }
                     }}>
                         <SearchIcon sx={{ position: "absolute", top: "8px", left: "10px", zIndex: "12" }} />
-                        <TextField variant='outlined' type='search' InputProps={{ sx: { borderRadius: "10px", height: "40px", paddingLeft: "25px", background: "#fff" } }} fullWidth placeholder='Search Twitter' onChange={(e) => { setSearchText(e.target.value); }} />
+                        <TextField variant='outlined' type='search' id='exploreInput' defaultValue={searchParams} InputProps={{ sx: { borderRadius: "10px", height: "40px", paddingLeft: "25px", background: "#fff" } }} fullWidth placeholder='Search Twitter' onChange={(e) => { setSearchText(e.target.value); }} />
                     </form>
                 </div>
             </div>
@@ -151,12 +210,22 @@ const ExplorePage = () => {
                     value === 'top' &&
                     <Fade in={value} {...(value ? { timeout: 500 } : {})}>
                         <div>
-                            <Title title={'Tags'} />
+                            {
+                                searchParams ?
+                                    <>
+                                        {
+                                            searchByTags?.length !== 0 &&
+                                            <Title title={'Tweets'} />
+                                        }
+                                    </>
+                                    :
+                                    <Title title={'Tweets for you'} />
+                            }
                             {
                                 searchByTags ?
                                     <>
                                         {
-                                            searchByTags.map((tweet) => {
+                                            searchByTags.slice(0, 5).map((tweet) => {
                                                 return (
                                                     <SingleExploreContainer tweet={tweet} type={'post'} />
                                                 )
@@ -193,11 +262,18 @@ const ExplorePage = () => {
                                 searchByTags ?
                                     <>
                                         {
-                                            searchByTags.map((tweet) => {
-                                                return (
-                                                    <SingleExploreContainer tweet={tweet} />
-                                                )
-                                            })
+                                            searchByTags.length === 0 ?
+                                                <small>There were no results!</small>
+                                                :
+                                                <>
+                                                    {
+                                                        searchByTags.map((tweet) => {
+                                                            return (
+                                                                <SingleExploreContainer tweet={tweet} />
+                                                            )
+                                                        })
+                                                    }
+                                                </>
                                         }
                                     </>
                                     :
@@ -214,11 +290,18 @@ const ExplorePage = () => {
                                 searchByUser ?
                                     <>
                                         {
-                                            searchByUser.map((tweet) => {
-                                                return (
-                                                    <SingleExploreContainer tweet={tweet} type={'people'} />
-                                                )
-                                            })
+                                            searchByUser.length === 0 ?
+                                                <small>There were no results!</small>
+                                                :
+                                                <>
+                                                    {
+                                                        searchByUser.map((tweet) => {
+                                                            return (
+                                                                <SingleExploreContainer tweet={tweet} type={'people'} />
+                                                            )
+                                                        })
+                                                    }
+                                                </>
                                         }
                                     </>
                                     :
@@ -231,7 +314,27 @@ const ExplorePage = () => {
                     value === 'tweet' &&
                     <Fade in={value} {...(value ? { timeout: 500 } : {})}>
                         <div>
-                            tweets
+                            {
+                                searchByTags ?
+                                    <>
+                                        {
+                                            searchByText.length === 0 ?
+                                                <small>There were no results!</small>
+                                                :
+                                                <>
+                                                    {
+                                                        searchByText.map((tweet) => {
+                                                            return (
+                                                                <SingleExploreContainer tweet={tweet} />
+                                                            )
+                                                        })
+                                                    }
+                                                </>
+                                        }
+                                    </>
+                                    :
+                                    <></>
+                            }
                         </div>
                     </Fade>
                 }
@@ -243,11 +346,18 @@ const ExplorePage = () => {
                                 searchByPhoto ?
                                     <>
                                         {
-                                            searchByPhoto.map((tweet) => {
-                                                return (
-                                                    <SingleExploreImgContainer tweet={tweet} />
-                                                )
-                                            })
+                                            searchByPhoto.length === 0 ?
+                                                <small>There were no results!</small>
+                                                :
+                                                <>
+                                                    {
+                                                        searchByPhoto.map((tweet) => {
+                                                            return (
+                                                                <SingleExploreImgContainer tweet={tweet} />
+                                                            )
+                                                        })
+                                                    }
+                                                </>
                                         }
                                     </>
                                     :
