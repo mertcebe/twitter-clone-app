@@ -9,6 +9,7 @@ import database from '../../firebase/firebaseConfig';
 import Tweet from '../home/Tweet';
 import SingleExploreContainer from './SingleExploreContainer';
 import SingleExploreImgContainer from './SingleExploreImgContainer';
+import style from './style.module.css';
 
 const Title = ({ title }) => {
     return (
@@ -166,7 +167,7 @@ const ExplorePage = () => {
     };
 
     return (
-        <div style={{ width: "45%" }}>
+        <div className={style.exploreContainer} style={{ width: "45%" }}>
             {/* search bar */}
             <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: "0", background: "#fff" }}>
                 <div style={{ width: "5%" }}>

@@ -145,7 +145,7 @@ const RightBar = () => {
     )
   }
   return (
-    <div style={{ width: "25%" }}>
+    <div className={style.rightBar} style={{ width: "25%" }}>
       {/* search bar */}
       <div style={{ boxSizing: "border-box", padding: "12px 0", position: "sticky", top: "0", background: "#fff" }}>
         <form style={{ position: "relative", background: "#fff" }} onSubmit={(e) => {

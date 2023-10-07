@@ -146,14 +146,14 @@ const ProfilePage = () => {
         )
     }
     return (
-        <div style={{ width: "45%", border: "1px solid #efefef" }}>
+        <div className={style.profileContainer} style={{ width: "45%", border: "1px solid #efefef" }}>
             <div style={{ border: "1px solid #efefef", height: "50px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>
                 <IconButton sx={{ position: "relative", top: "-10px", marginRight: "20px" }} onClick={() => {
                     navigate(-1);
                 }}>
                     <ArrowBackIcon sx={{ fontSize: "20px", color: "#000" }} />
                 </IconButton>
-                <h5 className='d-inline-block' style={{ width: "90%", cursor: "pointer" }} onClick={() => {
+                <h5 className='d-inline-block' style={{ width: "84%", cursor: "pointer" }} onClick={() => {
                     window.scrollTo(0, 0);
                 }}>
                     <b className='d-block mt-1'>{user.name}</b>

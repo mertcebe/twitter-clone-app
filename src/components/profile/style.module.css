@@ -26,3 +26,27 @@
 .editBtn:hover{
     opacity: 0.86;
 }
+
+@media (max-width: 1220px) {
+    /* .tweetContainer {
+        font-size: 12px;
+    } */
+    .profileContainer {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1080px) {
+    .profileContainer {
+        width: 88% !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .editContainer{
+        width: 100% !important;
+    }
+    .backImgContainer{
+        width: 100% !important;
+    }
+}

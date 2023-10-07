@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
 import AddPostContainer from './AddPostContainer';
 import TweetsContainer from './TweetsContainer';
-
-
+import style from './style.module.css'
 
 const Home = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div style={{ width: "45%" }}>
+    <div className={style.homePage} style={{ width: "45%" }}>
       <div style={{ border: "1px solid #efefef", height: "50px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>
         <h5 className='d-inline-block mt-1' style={{ width: "100%", height: "40px", lineHeight: "40px", cursor: "pointer" }} onClick={() => {
           window.scrollTo(0, 0);

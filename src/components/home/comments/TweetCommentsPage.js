@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Skeleton from '../skeleton';
 import CommentContainer from './CommentContainer';
+import style from './style.module.css';
 
 const TweetCommentsPage = () => {
     const { id } = useParams();
@@ -60,14 +61,14 @@ const TweetCommentsPage = () => {
         )
     }
     return (
-        <div style={{ width: "45%", border: "1px solid #efefef" }}>
+        <div className={style.tweetCommentsContainer} style={{ width: "45%", border: "1px solid #efefef" }}>
             <div style={{ border: "1px solid #efefef", height: "40px", padding: "0 10px", lineHeight: "40px", position: "sticky", top: "0", zIndex: 100, background: "#fff" }}>
                 <IconButton sx={{ position: "relative", top: "-2px", marginRight: "10px" }} onClick={() => {
                     navigate(-1);
                 }}>
                     <ArrowBackIcon sx={{ fontSize: "20px", color: "#000" }} />
                 </IconButton>
-                <h5 className='d-inline-block' style={{ width: "90%", cursor: "pointer" }} onClick={() => {
+                <h5 className='d-inline-block' style={{ width: "86%", cursor: "pointer" }} onClick={() => {
                     window.scrollTo(0, 0);
                 }}><b>Tweet</b></h5>
             </div>

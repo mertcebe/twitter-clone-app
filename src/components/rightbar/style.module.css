@@ -62,3 +62,15 @@
         transform: translateX(100%);
     }
 }
+
+@media(max-width: 1210px) {
+    .rightBar{
+        width: 30% !important;
+    }
+}
+
+@media(max-width: 1080px) {
+    .rightBar{
+        display: none !important;
+    }
+}

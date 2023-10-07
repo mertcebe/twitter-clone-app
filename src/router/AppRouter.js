@@ -16,6 +16,7 @@ import RightBar from '../components/rightbar/RightBar'
 import ProfilePage from '../components/profile/ProfilePage'
 import NotificationsPage from '../components/notifications'
 import ExplorePage from '../components/explore'
+import BookMarksPage from '../components/bookmarks'
 
 const AppRouter = () => {
     let { isAuthorized, loading } = useAuthorized();
@@ -26,7 +27,7 @@ const AppRouter = () => {
     }
     return (
         <BrowserRouter>
-            <div className={isAuthorized&&'container'} style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%"}}>
+            <div className={isAuthorized&&'container'} id='allBody' style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%"}}>
                 {
                     isAuthorized && <SideBar />
                 }
@@ -34,6 +35,7 @@ const AppRouter = () => {
                     <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
                         <Route path={`/home`} element={<HomePage />} />
                         <Route path={`/search`} element={<ExplorePage />} />
+                        <Route path={`/bookmarks`} element={<BookMarksPage />} />
                         <Route path={`/profile/:uid`} element={<ProfilePage />} />
                         <Route path={`/home/posts/:id`} element={<TweetCommentsPage />} />
                         <Route path={`/notifications`} element={<NotificationsPage />} />

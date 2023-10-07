@@ -14,3 +14,21 @@
     text-decoration: none;
     color: #000;
 }
+
+@media (max-width: 1220px) {
+    /* .tweetContainer {
+        font-size: 12px;
+    } */
+    .notificationContainer {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1080px) {
+    .notificationContainer {
+        width: 90% !important;
+    }
+    .SingleNotificationContainer{
+        font-size: 10px;
+    }
+}

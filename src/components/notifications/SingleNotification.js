@@ -57,7 +57,7 @@ const SingleNotification = ({ notification }) => {
                         <NavLink className={style.singleNotificationNavLink} to={`/profile/${notification.sender.uid}`}><small className='text-muted' style={{ display: "inline-block", marginRight: "5px" }}>@{notification.sender.email}</small></NavLink>
                         <small className='text-muted' style={{ fontSize: "12px" }}><Moment fromNow>{notification.dateSended}</Moment></small>
                     </div>
-                    <p className='m-0' style={{ fontSize: "14px", color: "#505050", wordBreak: "break-word" }}>{notification.message}</p>
+                    <p className='m-0' style={{ fontSize: "12px", color: "#505050", wordBreak: "break-word" }}>{notification.message}</p>
                 </div>
                 {
                     notification.post &&

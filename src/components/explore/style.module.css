@@ -12,3 +12,18 @@
 .followBtn:hover {
     opacity: 0.86;
 }
+
+@media (max-width: 1220px) {
+    /* .tweetContainer {
+        font-size: 12px;
+    } */
+    .exploreContainer {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1080px) {
+    .exploreContainer {
+        width: 90% !important;
+    }
+}

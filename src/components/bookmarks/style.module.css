@@ -1,0 +1,14 @@
+@media (max-width: 1220px) {
+    /* .tweetContainer {
+        font-size: 12px;
+    } */
+    .bookmarksContainer {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1080px) {
+    .bookmarksContainer {
+        width: 88% !important;
+    }
+}

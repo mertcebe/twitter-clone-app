@@ -77,7 +77,7 @@ const SideBar = () => {
           <MenuItem sx={{ minWidth: "200px", display: "flex", justifyContent: "space-between", alignItems: "center" }}><span>Settings</span><i className="fa-solid fa-gear"></i></MenuItem>
         </Menu>
       </ul>
-      <MyColoredButton>Tweet</MyColoredButton>
+      <MyColoredButton className='tweetBtn'>Tweet</MyColoredButton>
     </div>
   )
 }

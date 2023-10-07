@@ -49,7 +49,7 @@ const AddPostContainer = () => {
         let myTags = [];
         text.split(' ').map((word) => {
             if (word.startsWith('#')) {
-                myTags.push(word.replace('#', '').replace('.', ''));
+                myTags.push(word.replace('#', '').replace('.', '').replace(',', '').replace(':', ''));
             }
         })
         if (file) {
@@ -108,10 +108,10 @@ const AddPostContainer = () => {
                 <div style={{ marginRight: "10px" }}>
                     <img src={auth.currentUser.photoURL ? auth.currentUser.photoURL : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%", pointerEvents: "none" }} />
                 </div>
-                <div>
-                    <textarea cols='66' value={text} onChange={(e) => {
+                <div style={{width: "100%"}}>
+                    <textarea value={text} onChange={(e) => {
                         setText(e.target.value);
-                    }} style={{ maxHeight: "80px", height: "80px", outline: "none", resize: "none", border: "none", borderBottom: "1px solid #dfdfdf" }} placeholder="What's happening?"></textarea>
+                    }} style={{ maxHeight: "80px", width: "100%", height: "80px", outline: "none", resize: "none", border: "none", borderBottom: "1px solid #dfdfdf" }} placeholder="What's happening?"></textarea>
                     {
                         file ?
                             <div className={style.addFileContainer}>

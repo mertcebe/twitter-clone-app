@@ -173,6 +173,13 @@ const Tweet = ({ tweet, onlyShown = false }) => {
             })
     }
 
+    const saveTweetFunc = () => {
+        handleClose();
+        setDoc(doc(database, `users/${auth.currentUser.uid}/savedTweets/${id}`), {
+            ...tweet
+        })
+    }
+
     if (!owner) {
         return (
             Array.from([1, 2, 3]).map((item) => {
@@ -188,7 +195,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                 <div style={{ marginRight: "10px" }}>
                     <img src={owner.profileImg ? owner.profileImg.src : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "5px" }} />
                 </div>
-                <div>
+                <div style={{width: "100%"}}>
                     <div>
                         <NavLink to={`/profile/${owner.uid}`} className={style.tweetOwnerName}><b>{owner.name}</b></NavLink>
                         <NavLink to={`/profile/${owner.uid}`} className={style.tweetOwnerEmail}>@{owner.email}</NavLink>
@@ -212,7 +219,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                                     <p className='m-0 mb-2' style={{ wordBreak: "break-word" }}>{text.split(' ').map((item) => {
                                         if (item.startsWith('#')) {
                                             return (
-                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
+                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '').replace(',', '').replace(':', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
                                             )
                                         }
                                         return (
@@ -228,7 +235,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                                     <p className='m-0 mb-2' style={{ wordBreak: "break-word" }}>{text.slice(0, textSize).split(' ').map((item) => {
                                         if (item.startsWith('#')) {
                                             return (
-                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
+                                                <span><Link to={`/search?q=${item.replace('#', '').replace('.', '').replace(',', '').replace(':', '')}`} style={{ textDecoration: "none", color: '#1d9bf0' }}>{item}</Link> </span>
                                             )
                                         }
                                         return (
@@ -256,44 +263,48 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                             }
                         </>
                     }
-                    <IconButton
-                        style={{ position: "absolute", top: "5px", right: "10px" }}
-                        aria-label="more"
-                        id="long-button"
-                        aria-controls={open ? 'long-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                    >
-                        <MoreHorizIcon />
-                    </IconButton>
-                    {/* <Menu
-                        id="long-menu"
-                        MenuListProps={{
-                            'aria-labelledby': 'long-button',
-                        }}
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: '20ch',
-                            },
-                        }}
-                    >
-                        <MenuItem onClick={handleClose}>
-                            Report this tweet
-                        </MenuItem>
-                        {
-                            auth.currentUser.uid === owner.uid ?
-                                <MenuItem onClick={deleteTweetFunc}>
-                                    Delete
-                                </MenuItem>
-                                :
-                                <></>
-                        }
-                    </Menu> */}
+                    <NavLink to={''}>
+                        <IconButton
+                            style={{ position: "absolute", top: "5px", right: "10px" }}
+                            aria-label="more"
+                            id="long-button"
+                            aria-controls={open ? 'long-menu' : undefined}
+                            aria-expanded={open ? 'true' : undefined}
+                            aria-haspopup="true"
+                            onClick={handleClick}
+                        >
+                            <MoreHorizIcon />
+                        </IconButton>
+                        <Menu
+                            id="long-menu"
+                            MenuListProps={{
+                                'aria-labelledby': 'long-button',
+                            }}
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: '20ch',
+                                },
+                            }}
+                        >
+                            <MenuItem onClick={handleClose}>
+                                Report this tweet
+                            </MenuItem>
+                            {
+                                auth.currentUser.uid === owner.uid ?
+                                    <MenuItem onClick={deleteTweetFunc}>
+                                        Delete
+                                    </MenuItem>
+                                    :
+                                    <MenuItem onClick={saveTweetFunc}>
+                                        Save this tweet
+                                    </MenuItem>
+                            }
+                        </Menu>
+                    </NavLink>
                     {
                         img ?
                             <img src={img.src} alt="" style={{ width: "100%", margin: "10px 0", borderRadius: "10px" }} />
@@ -304,7 +315,7 @@ const Tweet = ({ tweet, onlyShown = false }) => {
                         onlyShown && <small className='text-muted'>{new Date(dateAdded).toLocaleString()}</small>
                     }
                     {/* comment retweet like istatistics share */}
-                    <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none" }}>
+                    <NavLink to={''} className='d-flex justify-content-between align-items-center' style={{ textDecoration: "none", width: "100%" }}>
                         <MyActionButton type={'comment'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-regular fa-comment"></i>} text={commentCount} />
                         <MyActionButton type={'retweet'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-solid fa-retweet"></i>} text={'36,7B'} />
                         <MyActionButton type={'like'} tweet={tweet} owner={{ ...owner, id }} icon={<i className="fa-regular fa-heart"></i>} text={likesCount} />

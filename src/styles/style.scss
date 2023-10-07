@@ -1,43 +1,65 @@
 @import '../../node_modules/bootstrap/scss/bootstrap.scss';
 
-@media(max-width: 800px){
-    .signInPageContainer{
+@media(max-width: 1210px) {
+    .sidebar{
+        width: 50px !important;
+        overflow: hidden !important;
+    }
+    .sidebar .tweetBtn{
+        display: none !important;
+    }
+    .MuiTab-root {
+        width: 50% !important;
+        font-size: 8px !important;
+    }
+    .loadingContainer{
+        width: 100% !important;
+        height: 80vh !important;
+    }
+}
+
+@media(max-width: 800px) {
+    .signInPageContainer {
         flex-direction: column !important;
         align-items: flex-start !important;
         padding: 0 40px !important;
     }
-    .twitterLogoContainer{
+
+    .twitterLogoContainer {
         height: 100px !important;
         justify-content: flex-start !important;
     }
-    .twitterLogoImg{
+
+    .twitterLogoImg {
         width: 50px !important;
     }
-    .contextContainer{
+
+    .contextContainer {
         width: 80% !important;
     }
 }
 
-@media(max-width: 600px){
-    .signUpMedia{
+@media(max-width: 600px) {
+    .signUpMedia {
         width: 100% !important;
         height: 100vh !important;
         border-radius: 0 !important;
     }
-    .signUInMedia{
+
+    .signUInMedia {
         width: 100% !important;
         height: 100vh !important;
         border-radius: 0 !important;
     }
 }
 
-.sidebarUl > .active{
+.sidebarUl>.active {
     font-weight: bold !important;
     color: #1b1b1b !important;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif !important;
 }
 
-.sidebarMenuItem:hover{
+.sidebarMenuItem:hover {
     background-color: #ececec !important;
     border-radius: 6px !important;
 }

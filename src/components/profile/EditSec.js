@@ -19,6 +19,7 @@ import { uploadImageToStorage } from '../../images/ImageActions';
 import { doc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import loadingImg from '../../images/twitterLoadingGif.gif'
+import style from './style.module.css';
 
 const BootstrapDialog = styledForStyles(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -162,7 +163,7 @@ const EditSec = ({ owner }) => {
                     <CloseIcon />
                 </IconButton>
 
-                <div style={{ width: "500px" }}>
+                <div className={style.editContainer} style={{ width: "500px" }}>
                     {
                         loading ?
                             <div style={{width: "100%"}}>
@@ -185,8 +186,8 @@ const EditSec = ({ owner }) => {
                                                 self: e.target.files[0]
                                             })
                                         }} />
-                                        <label htmlFor="fileInputBack">
-                                            <img src={backFile ? backFile.noStorageURL : backImg} alt="" style={{ width: "500px", height: "180px", cursor: "pointer", filter: "brightness(0.9)" }} />
+                                        <label htmlFor="fileInputBack" style={{width: "100%"}}>
+                                            <img className={style.backImgContainer} src={backFile ? backFile.noStorageURL : backImg} alt="" style={{ width: "500px", height: "180px", cursor: "pointer", filter: "brightness(0.9)" }} />
                                         </label>
                                     </div>
                                     <div style={{ width: "100%", background: "red", position: "relative" }}>

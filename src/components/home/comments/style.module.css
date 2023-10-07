@@ -33,3 +33,17 @@
 .tweetOwnerName:hover{
     text-decoration: underline;
 }
+
+@media (max-width: 1220px) {
+    .tweetCommentsContainer{
+        width: 60% !important;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 1080px) {
+    .tweetCommentsContainer{
+        width: 88% !important;
+        margin: 0 10px;
+    }
+}
