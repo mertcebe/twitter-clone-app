@@ -8,7 +8,7 @@ import style from '../rightbar/style.module.css'
 import SearchIcon from '@mui/icons-material/Search';
 import { addDoc, collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
 import defaultProfileImg from '../../images/twitterProfileImg.png';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import Skeleton from './skeleton';
 import { toast } from 'react-toastify';
 
@@ -130,11 +130,12 @@ const RightBar = () => {
         setTrends(newTags);
       })
   }
-
+  let myLocation = useLocation();
   useEffect(() => {
     getNews('technology');
     getUsers();
-    getTrends()
+    getTrends();
+    console.log()
   }, []);
 
   if (!newsData || !users || !trends) {
@@ -142,6 +143,11 @@ const RightBar = () => {
       <div style={{ width: "25%" }}>
         <Skeleton />
       </div>
+    )
+  }
+  if(myLocation.pathname.startsWith('/messages')){
+    return (
+      <></>
     )
   }
   return (

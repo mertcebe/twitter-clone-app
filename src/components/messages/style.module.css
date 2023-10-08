@@ -1,0 +1,10 @@
+.searchUserContainer{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.searchUserContainer:hover{
+    background-color: #eeeeee;
+}

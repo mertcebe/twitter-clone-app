@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router'
 import CommentSec from '../components/home/comments/CommentSec';
 import EditSec from '../components/profile/EditSec';
+import SendMessageContainer from '../components/messages/SendMessageContainer';
 
 const PrivateRoute = ({ isAuthorized }) => {
     let [isCommentSecOpen, commentOwner] = useSelector((state) => {
@@ -10,6 +11,9 @@ const PrivateRoute = ({ isAuthorized }) => {
     })
     let [isEditSecOpen, editOwner] = useSelector((state) => {
         return [state.profileReducer.isEditSecOpen, state.profileReducer.editOwner];
+    })
+    let [isMessageSecOpen, sender] = useSelector((state) => {
+        return [state.messageReducer.isMessageSecOpen, state.messageReducer.sender];
     })
     return (
         <>
@@ -24,6 +28,9 @@ const PrivateRoute = ({ isAuthorized }) => {
             }
             {
                 isEditSecOpen && <EditSec owner={editOwner} />
+            }
+            {
+                isMessageSecOpen && <SendMessageContainer owner={sender} />
             }
         </>
     )

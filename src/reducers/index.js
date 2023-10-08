@@ -6,6 +6,7 @@ import CommentReducer from './commentReducers/CommentReducer'
 import TweetReducer from './tweetsReducers/TweetReducer'
 import NotificationReducer from './notificationsReducers/NotificationsReducer'
 import ProfileReducer from './profileReducers/ProfileReducer'
+import MessageReducer from './messageReducers/MessageReducer'
 
 
 const AppReducer = ({children}) => {
@@ -15,7 +16,8 @@ const AppReducer = ({children}) => {
             commentReducer: CommentReducer,
             tweetsReducer: TweetReducer,
             notificationReducer: NotificationReducer,
-            profileReducer: ProfileReducer
+            profileReducer: ProfileReducer,
+            messageReducer: MessageReducer
         })
     )
 

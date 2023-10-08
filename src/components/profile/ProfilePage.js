@@ -5,7 +5,7 @@ import database, { auth } from '../../firebase/firebaseConfig';
 import { getFollowers, getFollowings, getProfile, getUserTweets } from './ProfileActions';
 import defaultBackImg from '../../images/twitterDefaultBackImg.jpg';
 import defaultProfileImg from '../../images/twitterProfileImg.png';
-import { Box, Fade, IconButton, Tab, Tabs } from '@mui/material';
+import { Box, Fade, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import style from './style.module.css';
 import Moment from 'react-moment';
@@ -16,6 +16,7 @@ import { toggleEditSec } from '../../reducers/profileReducers/ProfileActions';
 import { useDispatch } from 'react-redux';
 import Loading from '../Loading';
 import LinkIcon from '@mui/icons-material/Link';
+import verificationIcon from '../../images/twitterVerificationIcon.png';
 
 const ShortInfo = ({ icon, text, type }) => {
     if (typeof icon === 'string') {
@@ -190,7 +191,7 @@ const ProfilePage = () => {
 
             <div style={{ boxSizing: "border-box", padding: "0 18px" }}>
                 <div style={{ marginBottom: "10px" }}>
-                    <h5 style={{ fontSize: "22px", margin: "0" }}><b>{user.name}</b></h5>
+                    <h5 style={{ fontSize: "22px", margin: "0" }}><b>{user.name}</b> <Tooltip title='Verified account'><img src={verificationIcon} alt="" style={{ width: "16px", height: "16px", cursor: "pointer" }} /></Tooltip></h5>
                     <small className='d-block text-muted m-0'>{user.email}</small>
                 </div>
                 <div>
