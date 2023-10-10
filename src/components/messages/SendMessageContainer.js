@@ -20,6 +20,7 @@ import twitterLoadingGif from '../../images/twitterLoadingGif.gif';
 import verificationIcon from '../../images/twitterVerificationIcon.png';
 import style from './style.module.css';
 import { NavLink } from 'react-router-dom';
+import { TagsInput } from "react-tag-input-component";
 
 const BootstrapDialog = styledForStyles(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -76,13 +77,22 @@ const SendMessageContainer = ({ owner }) => {
                 })
                 setUsers(users);
             })
-    }, [])
+    }, []);
+
     const [open, setOpen] = useState(true);
     let dispatch = useDispatch();
 
     const handleClose = () => {
         toggleMessageSec(dispatch, false, null);
     };
+
+    // tags section
+
+    const [selected, setSelected] = useState([]);
+
+    const nextFunc = () => {
+        console.log(selected);
+    }
 
     if (!users) {
         return (
@@ -122,7 +132,7 @@ const SendMessageContainer = ({ owner }) => {
                             <h5 className='d-inline-block mt-1' style={{ width: "100%", height: "40px", lineHeight: "40px", fontSize: "17px" }}><b className='d-block'>New message</b></h5>
                         </div>
                     </div>
-                    <MyButton>
+                    <MyButton disabled={selected.length !== 0 ? false : true} style={{ background: selected.length !== 0 ? '#000' : 'grey' }} onClick={nextFunc}>
                         Next
                     </MyButton>
                 </div>
@@ -143,7 +153,20 @@ const SendMessageContainer = ({ owner }) => {
                     </div>
 
                     <div>
-                        tabs section
+                        <TagsInput
+                            disableBackspaceRemove
+                            value={selected.map((user) => user.name)}
+                            onChange={(e) => {
+                                let tags = [];
+                                selected.forEach((user) => {
+                                    if(e.includes(user.name)){
+                                        tags.push({...user});
+                                    }
+                                })
+                                setSelected(tags)
+                            }}
+                            name="tags"
+                        />
                     </div>
 
                     <div>
@@ -157,7 +180,11 @@ const SendMessageContainer = ({ owner }) => {
                                     {
                                         users.map((user) => {
                                             return (
-                                                <div className={style.searchUserContainer}>
+                                                <div className={style.searchUserContainer} onClick={() => {
+                                                    if (!selected.map((user) => user.name).includes(user.name)) {
+                                                        setSelected([...selected, { name: user.name, uid: user.uid }]);
+                                                    }
+                                                }}>
                                                     <img src={user.profileImg ? user.profileImg.src : profileImg} alt="" style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "5px", pointerEvents: "none" }} />
                                                     <div>
                                                         <small style={{ display: "block", fontSize: "12px" }}><NavLink to={`/profile/${user.uid}`} onClick={handleClose} style={{ textDecoration: "none", color: "#000" }}><b>{user.name}</b></NavLink> {user.personalize ? <Tooltip title='Verified account'><img src={verificationIcon} alt="" style={{ width: "12px", height: "12px", cursor: "pointer" }} /></Tooltip> : <></>}</small>

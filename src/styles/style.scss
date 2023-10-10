@@ -69,3 +69,20 @@
     width: 120px !important;
     font-size: 10px !important;
 }
+
+// tags input
+.rti--container{
+    width: 100% !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.rti--input{
+    pointer-events: none !important;
+    display: none !important;
+
+}
+
+.rti--tag{
+    font-size: 12px !important;
+}
