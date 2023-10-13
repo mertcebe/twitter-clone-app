@@ -18,7 +18,7 @@ import Loading from '../Loading';
 import LinkIcon from '@mui/icons-material/Link';
 import verificationIcon from '../../images/twitterVerificationIcon.png';
 
-const ShortInfo = ({ icon, text, type }) => {
+export const ShortInfo = ({ icon, text, type }) => {
     if (typeof icon === 'string') {
         return (
             <NavLink to={`${type}`} className='m-0' style={{ textDecoration: "none", color: "#000" }}><b style={{ marginRight: "6px", fontSize: "16px" }}>{icon}</b><span className='text-muted' style={{ fontSize: "14px" }}>{text}</span></NavLink>

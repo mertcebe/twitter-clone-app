@@ -26,7 +26,7 @@ const MyButton = styled.button`
 `;
 
 const MessagesPage = () => {
-    let [messages, setMessages] = useState([{ text: 'qwdqwd qwdqwdqydg qwgdqywtd qywt dywqdfytqwdftyqdw ytqwudgqwu dquwd', owner: { name: 'mert', email: 'web@gmail.com', uid: 'tntISs2m2ggugvbkP7oPizjScA82' }, id: 'qwd12332r32feQ123Uwdqd2', dateSended: '1696663968240' }]);
+    let [messages, setMessages] = useState([{ text: 'qwdqwd qwdqwdqydg qwgdqywtd qywt dywqdfytqwdftyqdw ytqwudgqwu dquwd', owner: { name: 'mert', email: 'web@gmail.com', uid: 'tntISs2m2ggugvbkP7oPizjScA82' }, id: 'qwd12332r32feQ123Uwdqd2', dateSended: '1696663968240' }, { text: 'qwdqwd qwdqwdqydg qwgdqywtd qywt dywqdfytqwdftyqdw ytqwudgqwu dquwd', owner: { name: 'webDev', email: 'webDevwebDev123qwdqdwqwdqwdqwdqwdqwd@gmail.com', uid: 'vCto3lLulcRe2rVjJPN2CiCD3Dp1' }, id: 'qwd12332r32feQ123Uwdqd2', dateSended: '1696663968240' }]);
     const searchParams = useSearchParams()[0].get('id');
     useEffect(() => {
         // getDocs(query(collection(database, ``)))
@@ -41,7 +41,7 @@ const MessagesPage = () => {
     return (
         <div style={{ width: "75%", display: "flex", alignItems: "start" }}>
             {/* messages */}
-            <div style={{ width: "40%", border: "1px solid #efefef", borderTop: "none" }}>
+            <div style={{ width: "40%", border: "1px solid #efefef", borderTop: "none", marginRight: "10px" }}>
                 <div style={{ position: "sticky", top: "0", zIndex: "100", background: "#fff" }}>
                     <div style={{ border: "1px solid #efefef" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "40px", padding: "0 10px", lineHeight: "40px", zIndex: 100, background: "#fff" }}>

@@ -15,7 +15,7 @@ const MessageContainer = ({ message }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <small style={{ marginRight: "4px", fontSize: "15px" }}><b>{message.owner.name}</b></small>
-            <small style={{ fontSize: "11px", color: "grey" }}>@{message.owner.email.slice(0, 30)}{message.owner.email.length >= 30 ? '..' : ''}</small>
+            <small style={{ fontSize: "11px", color: "grey" }}>@{message.owner.email.slice(0, 26)}{message.owner.email.length >= 30 ? '..' : ''}</small>
           </div>
           <small style={{ fontSize: "12px", color: "grey" }}><Moment fromNow>{message.dateSended}</Moment></small>
         </div>
@@ -23,7 +23,7 @@ const MessageContainer = ({ message }) => {
       </div>
       {
         searchParams === message.owner.uid &&
-        <div style={{ position: "absolute", top: "0", right: "0", width: "2px", height: "100%", background: "#1d9bf0", borderTopLeftRadius: "10px", borderBottomLeftRadius: "10px" }}>
+        <div style={{ position: "absolute", top: "0", right: "0", width: "3px", height: "100%", background: "#1d9bf0", borderTopLeftRadius: "40px", borderBottomLeftRadius: "40px", boxShadow: "-3px 0px 5px lightblue" }}>
         </div>
       }
     </NavLink>
