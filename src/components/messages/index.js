@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import MessageIcon from '@mui/icons-material/Message';
 import MessageContainer from './MessageContainer';
 import style from './style.module.css';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import { useDispatch } from 'react-redux';
 import { toggleMessageSec } from '../../reducers/messageReducers/MessageActions';
@@ -26,10 +26,44 @@ const MyButton = styled.button`
 `;
 
 const MessagesPage = () => {
-    let [messages, setMessages] = useState([{ text: 'qwdqwd qwdqwdqydg qwgdqywtd qywt dywqdfytqwdftyqdw ytqwudgqwu dquwd', owner: { name: 'mert', email: 'web@gmail.com', uid: 'tntISs2m2ggugvbkP7oPizjScA82' }, id: 'qwd12332r32feQ123Uwdqd2', dateSended: '1696663968240' }, { text: 'qwdqwd qwdqwdqydg qwgdqywtd qywt dywqdfytqwdftyqdw ytqwudgqwu dquwd', owner: { name: 'webDev', email: 'webDevwebDev123qwdqdwqwdqwdqwdqwdqwd@gmail.com', uid: 'vCto3lLulcRe2rVjJPN2CiCD3Dp1' }, id: 'qwd12332r32feQ123Uwdqd2', dateSended: '1696663968240' }]);
+    // let [messages, setMessages] = useState([]);
+    let [messagingUsers, setMessagingUsers] = useState([]);
     const searchParams = useSearchParams()[0].get('id');
+    const getUsers = async () => {
+        return new Promise((resolve) => {
+            getDocs(query(collection(database, `users`)))
+                .then((snapshot) => {
+                    let users = [];
+                    snapshot.forEach((item) => {
+                        users.push(item.data());
+                    })
+                    resolve(users);
+                })
+        })
+    }
     useEffect(() => {
-        // getDocs(query(collection(database, ``)))
+        getUsers()
+            .then((snapshot) => {
+                let messages = [];
+                snapshot.forEach((user) => {
+                    getDocs(query(collection(database, `users/${auth.currentUser.uid}/messages/messageAll/${user.uid}`), orderBy('dateSended', 'desc')))
+                        .then((snapshotForMessages) => {
+                            if (snapshotForMessages.empty !== true) {
+                                setMessagingUsers([...messagingUsers, { owner: user, lastMessage: snapshotForMessages.docs[0].data() }]);
+                                // snapshotForMessages.forEach((item) => {
+                                //     messages.push({
+                                //         owner: user,
+                                //         ...item.data()
+                                //     });
+                                // })
+                            }
+                        })
+                })
+                console.log(messages);
+                setTimeout(() => {
+                    console.log(messagingUsers, 'qwdqwdqwdqwd');
+                }, 2000);
+            })
     }, []);
 
     let dispatch = useDispatch();
@@ -38,6 +72,11 @@ const MessagesPage = () => {
         toggleMessageSec(dispatch, true, auth.currentUser);
     }
 
+    if (messagingUsers.length === 0) {
+        return (
+            <h5>loading...</h5>
+        )
+    }
     return (
         <div style={{ width: "75%", display: "flex", alignItems: "start" }}>
             {/* messages */}
@@ -67,7 +106,7 @@ const MessagesPage = () => {
 
                 <div style={{ border: "1px solid #efefef" }}>
                     {
-                        messages.map((message, index) => {
+                        messagingUsers.map((message, index) => {
                             return (
                                 <MessageContainer message={message} key={index} />
                             )
@@ -83,10 +122,10 @@ const MessagesPage = () => {
                     searchParams ?
                         <MessageShownContainer uid={searchParams} />
                         :
-                        <div style={{width: "100%", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center"}}>
-                            <div style={{textAlign: "center"}}>
-                                <p className='m-0' style={{fontSize: "17px"}}><b>You don't have a message selected</b></p>
-                                <small className='d-block my-2 text-muted' style={{fontSize: "12px"}}>Choose one from your existing messages, or start a new one.</small>
+                        <div style={{ width: "100%", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <div style={{ textAlign: "center" }}>
+                                <p className='m-0' style={{ fontSize: "17px" }}><b>You don't have a message selected</b></p>
+                                <small className='d-block my-2 text-muted' style={{ fontSize: "12px" }}>Choose one from your existing messages, or start a new one.</small>
                                 <MyButton onClick={openMessageContainer}><b>New message</b></MyButton>
                             </div>
                         </div>

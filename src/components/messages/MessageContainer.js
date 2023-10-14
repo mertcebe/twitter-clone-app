@@ -9,7 +9,7 @@ const MessageContainer = ({ message }) => {
   return (
     <NavLink className={style.messageContainer} to={searchParams === message.owner.uid ? `/messages` : `/messages?id=${message.owner.uid}`} style={{ display: "flex", alignItems: "start", textDecoration: "none", color: "#000", position: "relative", padding: "10px 6px", width: "100%" }}>
       <div style={{ marginRight: "6px" }}>
-        <img src={message.owner.profileImg ? message.owner.profileImg : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
+        <img src={message.owner.profileImg ? message.owner.profileImg.src : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
       </div>
       <div style={{ width: "100%" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
@@ -17,9 +17,9 @@ const MessageContainer = ({ message }) => {
             <small style={{ marginRight: "4px", fontSize: "15px" }}><b>{message.owner.name}</b></small>
             <small style={{ fontSize: "11px", color: "grey" }}>@{message.owner.email.slice(0, 26)}{message.owner.email.length >= 30 ? '..' : ''}</small>
           </div>
-          <small style={{ fontSize: "12px", color: "grey" }}><Moment fromNow>{message.dateSended}</Moment></small>
+          <small style={{ fontSize: "12px", color: "grey" }}><Moment fromNow>{message.lastMessage.dateSended}</Moment></small>
         </div>
-        <small className='d-block text-muted' style={{ fontSize: "12px" }}>{message.text.slice(0, 40)}{message.text.length >= 30 ? '..' : ''}</small>
+        <small className='d-block text-muted' style={{ fontSize: "12px" }}>{message.lastMessage.messageText.slice(0, 40)}{message.lastMessage.messageText.length >= 30 ? '..' : ''}</small>
       </div>
       {
         searchParams === message.owner.uid &&

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import database, { auth } from '../../firebase/firebaseConfig';
 import profileImg from '../../images/twitterProfileImg.png';
@@ -13,11 +13,12 @@ import { ShortInfo } from '../profile/ProfilePage';
 import { toast } from 'react-toastify';
 import CloseIcon from '@mui/icons-material/Close';
 import { uploadImageToStorage } from '../../images/ImageActions';
+import SingleMessageContainer from './SingleMessageContainer';
 
 const MessageShownContainer = ({ uid }) => {
     let [user, setUser] = useState();
     const searchParams = useSearchParams()[0].get('id');
-    let [messages, setMessages] = useState([]);
+    let [messages, setMessages] = useState();
     let [followings, setFollowings] = useState();
     let [followers, setFollowers] = useState();
     let [messageText, setMessageText] = useState();
@@ -31,8 +32,8 @@ const MessageShownContainer = ({ uid }) => {
             })
     }
 
-    const getMessages = () => {
-        getDocs(query(collection(database, `users/${uid}/messages`)))
+    const getMessagesWith = (userUid) => {
+        getDocs(query(collection(database, `users/${auth.currentUser.uid}/messages/messageAll/${userUid}`), orderBy('dateSended', 'asc')))
             .then((snapshot) => {
                 let messages = [];
                 snapshot.forEach((message) => {
@@ -41,6 +42,7 @@ const MessageShownContainer = ({ uid }) => {
                         id: message.id
                     });
                 });
+                console.log(messages)
                 setMessages(messages);
             })
     }
@@ -72,13 +74,14 @@ const MessageShownContainer = ({ uid }) => {
         getUser(uid);
         getMyFollowers(uid);
         getMyFollowings(uid);
+        getMessagesWith(uid);
     }, [searchParams]);
 
     const sendMessageFunc = (e) => {
         e.preventDefault();
         const date = new Date().getTime();
         if (imageFirstView) {
-            uploadImageToStorage(imageFirstView.file, `${uid}/messageImages`)
+            uploadImageToStorage(imageFirstView, `messages`)
                 .then((snapshot) => {
                     addDoc(collection(database, `users/${uid}/messages/messageAll/${auth.currentUser.uid}`), {
                         messageText: messageText,
@@ -91,20 +94,25 @@ const MessageShownContainer = ({ uid }) => {
                                 src: auth.currentUser.photoURL
                             }
                         },
-                        type: 'reveive',
+                        type: 'receive',
                         img: {
                             ...snapshot
                         }
                     })
-                    addDoc(collection(database, `users/${auth.currentUser.uid}/messages/messageAll/${uid}`), {
-                        messageText: messageText,
-                        dateSended: date,
-                        toUserUid: uid,
-                        type: 'send',
-                        img: {
-                            ...snapshot
-                        }
-                    })
+                        .then((snapshotForId) => {
+                            setDoc(doc(database, `users/${auth.currentUser.uid}/messages/messageAll/${uid}/${snapshotForId.id}`), {
+                                messageText: messageText,
+                                dateSended: date,
+                                toUserUid: uid,
+                                type: 'send',
+                                img: {
+                                    ...snapshot
+                                }
+                            })
+                        })
+                        .then(() => {
+                            getMessagesWith(uid);
+                        })
                 })
         }
         else {
@@ -122,27 +130,33 @@ const MessageShownContainer = ({ uid }) => {
                 type: 'receive',
                 img: null
             })
-            addDoc(collection(database, `users/${auth.currentUser.uid}/messages/messageAll/${uid}`), {
-                messageText: messageText,
-                dateSended: date,
-                toUserUid: uid,
-                type: 'send',
-                img: null
-            })
+                .then((snapshotForId) => {
+                    setDoc(doc(database, `users/${auth.currentUser.uid}/messages/messageAll/${uid}/${snapshotForId.id}`), {
+                        messageText: messageText,
+                        dateSended: date,
+                        toUserUid: uid,
+                        type: 'send',
+                        img: null
+                    })
+                })
+                .then(() => {
+                    getMessagesWith(uid);
+                })
         }
         setImageFirstView();
         setMessageText('');
         document.getElementById('fileInputForMessageImg').value = '';
+
     }
 
-    if (!user) {
+    if (!user || !messages) {
         return (
             <Loading width={'40'} />
         )
     }
     return (
-        <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 2px 4px #efefef", padding: "5px 0" }}>
+        <div style={{position: "relative"}}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 2px 4px #efefef", padding: "5px 0", position: "sticky", top: "0", zIndex: 140, background: "#fff" }}>
                 <div style={{ display: "flex", alignItems: "start" }}>
                     <div style={{ marginRight: "10px" }}>
                         <img src={user.profileImg ? user.profileImg.src : profileImg} alt="" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
@@ -160,10 +174,18 @@ const MessageShownContainer = ({ uid }) => {
             </div>
 
             {/* messages */}
-            <div style={{ background: "#fff", height: "calc(100vh - 105px)", display: "flex", alignItems: "end", position: "relative" }}>
+            <div style={{ background: "#fff", height: "calc(100vh - 105px)", display: "flex", alignItems: "end", position: "relative", overflow: "auto" }}>
                 {
-                    !messages ?
-                        <div>messages</div>
+                    messages.length !== 0 ?
+                        <div style={{ width: "100%", height: "calc(100vh - 105px)" }}>
+                            {
+                                messages.map((message) => {
+                                    return (
+                                        <SingleMessageContainer message={message} key={message.id} />
+                                    )
+                                })
+                            }
+                        </div>
                         :
                         <div style={{ width: "100%", display: "flex", justifyContent: "center", padding: "10px" }}>
                             <div style={{ width: "80%", textAlign: "center" }}>
@@ -186,27 +208,29 @@ const MessageShownContainer = ({ uid }) => {
                             </div>
                         </div>
                 }
-                {/* image container */}
-                {
-                    imageFirstView &&
-                    <div className='shadow-sm' style={{ width: "100%", background: "#fff", zIndex: 100, position: "absolute", borderRadius: "10px", boxSizing: "border-box", padding: "10px" }}>
-                        <IconButton sx={{ position: "absolute", top: "0", right: "0", zIndex: 90 }} onClick={() => {
-                            setImageFirstView();
-                            document.getElementById('fileInputForMessageImg').value = '';
-                        }}>
-                            <CloseIcon />
-                        </IconButton>
-                        <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
-                            <img src={imageFirstView.url} alt="" style={{ width: "50%", marginRight: "10px" }} />
-                            <div>
-                                <small className='d-block mb-2'><b>Name:</b> <i>{imageFirstView.file.name}</i></small>
-                                <small className='d-block mb-2'><b>Type:</b> <i>{imageFirstView.file.type}</i></small>
-                                <small className='d-block'><b>Size:</b> <i>{imageFirstView.file.size} kb</i></small>
-                            </div>
+
+            </div>
+
+            {/* image container */}
+            {
+                imageFirstView &&
+                <div className='shadow' style={{ width: "90%", background: "#fff", zIndex: 100, position: "absolute", bottom: "56px", left: "0", borderRadius: "30px", borderBottomLeftRadius: "0", boxSizing: "border-box", padding: "10px 30px" }}>
+                    <IconButton sx={{ position: "absolute", top: "10px", right: "10px", zIndex: 90 }} onClick={() => {
+                        setImageFirstView();
+                        document.getElementById('fileInputForMessageImg').value = '';
+                    }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+                        <img src={imageFirstView.url} alt="" style={{ width: "50%", marginRight: "10px", borderRadius: "10px" }} />
+                        <div>
+                            <small className='d-block mb-2'><b>Name:</b> <i>{imageFirstView.file.name}</i></small>
+                            <small className='d-block mb-2'><b>Type:</b> <i>{imageFirstView.file.type}</i></small>
+                            <small className='d-block'><b>Size:</b> <i>{imageFirstView.file.size} kb</i></small>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
 
             {/* input */}
             <form onSubmit={sendMessageFunc} style={{ width: "100%", display: "flex", alignItems: "center", padding: "5px 4px 5px 4px" }}>
@@ -216,6 +240,9 @@ const MessageShownContainer = ({ uid }) => {
                         console.log(e.target.files[0])
                         setImageFirstView({
                             url: url,
+                            name: e.target.files[0].name,
+                            type: e.target.files[0].type,
+                            self: e.target.files[0],
                             file: e.target.files[0]
                         });
                     }} />
