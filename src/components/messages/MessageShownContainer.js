@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import database, { auth } from '../../firebase/firebaseConfig';
 import profileImg from '../../images/twitterProfileImg.png';
@@ -111,6 +111,12 @@ const MessageShownContainer = ({ uid }) => {
                             })
                         })
                         .then(() => {
+                            updateDoc(doc(database, `users/${auth.currentUser.uid}`), {
+                                lastMessageDate: date
+                            })
+                            updateDoc(doc(database, `users/${uid}`), {
+                                lastMessageDate: date
+                            })
                             getMessagesWith(uid);
                         })
                 })
@@ -140,6 +146,12 @@ const MessageShownContainer = ({ uid }) => {
                     })
                 })
                 .then(() => {
+                    updateDoc(doc(database, `users/${auth.currentUser.uid}`), {
+                        lastMessageDate: date
+                    })
+                    updateDoc(doc(database, `users/${uid}`), {
+                        lastMessageDate: date
+                    })
                     getMessagesWith(uid);
                 })
         }

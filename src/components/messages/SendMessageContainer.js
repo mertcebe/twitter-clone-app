@@ -12,10 +12,10 @@ import ImageIcon from '@mui/icons-material/Image';
 import styled from '@emotion/styled';
 import { Navigate, useNavigate } from 'react-router';
 import { toggleEditSec } from '../../reducers/profileReducers/ProfileActions';
-import { toggleMessageSec } from '../../reducers/messageReducers/MessageActions';
+import { setActiveMessagingUsers, toggleMessageSec } from '../../reducers/messageReducers/MessageActions';
 import { TextField, Tooltip } from '@mui/material';
-import { collection, getDocs, limit, query, where } from 'firebase/firestore';
-import database from '../../firebase/firebaseConfig';
+import { addDoc, collection, doc, getDocs, limit, query, setDoc, where } from 'firebase/firestore';
+import database, { auth } from '../../firebase/firebaseConfig';
 import twitterLoadingGif from '../../images/twitterLoadingGif.gif';
 import verificationIcon from '../../images/twitterVerificationIcon.png';
 import style from './style.module.css';
@@ -91,7 +91,8 @@ const SendMessageContainer = ({ owner }) => {
     const [selected, setSelected] = useState([]);
 
     const nextFunc = () => {
-        console.log(selected);
+        setActiveMessagingUsers(dispatch, selected);
+        toggleMessageSec(dispatch, false, null);
     }
 
     if (!users) {
@@ -159,8 +160,8 @@ const SendMessageContainer = ({ owner }) => {
                             onChange={(e) => {
                                 let tags = [];
                                 selected.forEach((user) => {
-                                    if(e.includes(user.name)){
-                                        tags.push({...user});
+                                    if (e.includes(user.name)) {
+                                        tags.push({ ...user });
                                     }
                                 })
                                 setSelected(tags)
@@ -182,7 +183,7 @@ const SendMessageContainer = ({ owner }) => {
                                             return (
                                                 <div className={style.searchUserContainer} onClick={() => {
                                                     if (!selected.map((user) => user.name).includes(user.name)) {
-                                                        setSelected([...selected, { name: user.name, uid: user.uid }]);
+                                                        setSelected([...selected, { ...user }]);
                                                     }
                                                 }}>
                                                     <img src={user.profileImg ? user.profileImg.src : profileImg} alt="" style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "5px", pointerEvents: "none" }} />

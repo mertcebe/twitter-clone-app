@@ -7,3 +7,10 @@ export const toggleMessageSec = (dispatch, value, owner) => {
         }
     });
 }
+
+export const setActiveMessagingUsers = (dispatch, value) => {
+    dispatch({
+        type: 'MESSAGES',
+        payload: value
+    });
+}
