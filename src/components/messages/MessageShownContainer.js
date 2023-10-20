@@ -27,7 +27,6 @@ const MessageShownContainer = ({ uid }) => {
     const getUser = (uid) => {
         getDoc(doc(database, `users/${uid}`))
             .then((snapshot) => {
-                console.log(snapshot.data())
                 setUser(snapshot.data());
             })
     }
@@ -42,7 +41,6 @@ const MessageShownContainer = ({ uid }) => {
                         id: message.id
                     });
                 });
-                console.log(messages)
                 setMessages(messages);
             })
     }
@@ -249,7 +247,6 @@ const MessageShownContainer = ({ uid }) => {
                 <div style={{ marginRight: "10px" }}>
                     <input type="file" id='fileInputForMessageImg' style={{ display: "none" }} onChange={(e) => {
                         const url = URL.createObjectURL(e.target.files[0]);
-                        console.log(e.target.files[0])
                         setImageFirstView({
                             url: url,
                             name: e.target.files[0].name,
@@ -266,7 +263,7 @@ const MessageShownContainer = ({ uid }) => {
                 </div>
                 <TextField size='small' value={messageText} variant='outlined' onChange={(e) => {
                     setMessageText(e.target.value);
-                }} InputProps={{ style: { borderRadius: "40px" } }} style={{ marginRight: "2px" }} fullWidth />
+                }} InputProps={{ style: { borderRadius: "40px" } }} style={{ marginRight: "2px" }} fullWidth placeholder='Start a new message' />
                 <div>
                     <IconButton disabled={messageText || imageFirstView ? false : true} onClick={sendMessageFunc}>
                         <SendIcon sx={{ color: messageText || imageFirstView ? "#1d9bf0" : 'grey' }} />

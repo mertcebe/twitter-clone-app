@@ -36,11 +36,11 @@ const AppRouter = () => {
                     <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
                         <Route path={`/home`} element={<HomePage />} />
                         <Route path={`/search`} element={<ExplorePage />} />
+                        <Route path={`/notifications`} element={<NotificationsPage />} />
                         <Route path={`/messages`} element={<MessagesPage />} />
                         <Route path={`/bookmarks`} element={<BookMarksPage />} />
                         <Route path={`/profile/:uid`} element={<ProfilePage />} />
                         <Route path={`/home/posts/:id`} element={<TweetCommentsPage />} />
-                        <Route path={`/notifications`} element={<NotificationsPage />} />
                     </Route>
 
                     <Route element={<PublicRoute isAuthorized={isAuthorized} />}>

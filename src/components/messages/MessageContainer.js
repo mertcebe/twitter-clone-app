@@ -15,9 +15,9 @@ const MessageContainer = ({ message }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <small style={{ marginRight: "4px", fontSize: "14px" }}><b>{message.owner.name}</b></small>
-            <small style={{ fontSize: "11px", color: "grey" }}>@{message.owner.email.slice(0, 34 - message.owner.name.length)}{(message.owner.email.length + message.owner.name.length) >= 34 ? '..' : ''}</small>
+            <small style={{ fontSize: "11px", color: "grey" }}>@{message.owner.email.slice(0, 46 - (Number(message.owner.name.length) + 14))}{message.owner.email.length >= 46 - (Number(message.owner.name.length) + 14)&&'...'}</small>
           </div>
-          <small style={{ fontSize: "12px", color: "grey" }}><Moment fromNow>{message.lastMessage?.dateSended}</Moment></small>
+          <small id='dateSendedContainer' style={{ fontSize: "12px", color: "grey" }}><Moment fromNow>{message.lastMessage?.dateSended}</Moment></small>
         </div>
         <small className='d-block text-muted' style={{ fontSize: "12px" }}>{message.lastMessage?.messageText.slice(0, 40)}{message.lastMessage?.messageText.length >= 30 ? '..' : ''}</small>
       </div>

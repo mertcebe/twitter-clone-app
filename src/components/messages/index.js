@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react'
 import MessageIcon from '@mui/icons-material/Message';
 import MessageContainer from './MessageContainer';
 import style from './style.module.css';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveMessagingUsers, toggleMessageSec } from '../../reducers/messageReducers/MessageActions';
-import { useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import MessageShownContainer from './MessageShownContainer';
 
@@ -27,7 +27,10 @@ const MyButton = styled.button`
 
 const MessagesPage = () => {
     let [messagingUsers, setMessagingUsers] = useState([]);
+    let [searchUsers, setSearchUsers] = useState([]);
+    let [searchText, setSearchText] = useState();
     const searchParams = useSearchParams()[0].get('id');
+    const searchParamsForSearch = useSearchParams()[0].get('search');
 
     const activeMessagingUsers = useSelector((state) => {
         return state.messageReducer.activeMessagingUsers;
@@ -45,6 +48,22 @@ const MessagesPage = () => {
                 })
         })
     }
+
+    const getSearchUsers = async (searchText) => {
+        return await new Promise((resolve) => {
+            getDocs(query(collection(database, `users`)))
+                .then((snapshot) => {
+                    let users = [];
+                    snapshot.forEach((item) => {
+                        if (item.data().name.includes(searchText)) {
+                            users.push(item.data());
+                        }
+                    })
+                    resolve(users);
+                })
+        })
+    }
+
     useEffect(() => {
         let users = [];
         getUsers()
@@ -73,6 +92,8 @@ const MessagesPage = () => {
         toggleMessageSec(dispatch, true, auth.currentUser);
     }
 
+    let navigate = useNavigate();
+
     if (messagingUsers.length === 0) {
         return (
             <h5>loading...</h5>
@@ -95,14 +116,34 @@ const MessagesPage = () => {
                                     <MessageIcon sx={{ fontSize: "17px" }} />
                                 </IconButton>
                             </div>
-                            <div style={{ boxSizing: "border-box", padding: "0 10px", margin: "10px 0", position: "relative" }}>
-                                <TextField variant='outlined' size='small' InputProps={{ style: { borderRadius: "20px", paddingLeft: "30px" } }} fullWidth placeholder={`Search Direct Messages`} />
+                            <form style={{ boxSizing: "border-box", padding: "0 10px", margin: "10px 0", position: "relative" }} onSubmit={(e) => {
+                                e.preventDefault();
+                                navigate(`/messages?search=${searchText}`);
+                                getSearchUsers(searchText)
+                                    .then((snapshot) => {
+                                        console.log(snapshot)
+                                        setSearchUsers(snapshot);
+                                    })
+                            }}>
+                                <TextField variant='outlined' size='small' InputProps={{ style: { borderRadius: "20px", paddingLeft: "30px" } }} fullWidth placeholder={`Search Direct Messages`} onChange={(e) => { setSearchText(e.target.value); }} />
                                 <span style={{ position: "absolute", left: "26px", top: "7px" }}><i className="fa-solid fa-magnifying-glass" style={{ color: "grey" }}></i></span>
-                            </div>
+                            </form>
                         </div>
 
                         <div>
-                            message request
+                            {
+                                searchParamsForSearch &&
+                                <>
+                                    {
+                                        searchUsers ?
+                                            <>
+
+                                            </>
+                                            :
+                                            <></>
+                                    }
+                                </>
+                            }
                         </div>
                     </div>
 
@@ -112,9 +153,17 @@ const MessagesPage = () => {
                             <>
                                 {
                                     activeMessagingUsers.map((user, index) => {
-                                        return (
-                                            <MessageContainer message={{ owner: user }} key={index} />
-                                        )
+                                        let userNames = messagingUsers.map((user) => user.owner.name);
+                                        if (!userNames.includes(user.name)) {
+                                            return (
+                                                <MessageContainer message={{ owner: user }} key={index} />
+                                            )
+                                        }
+                                        else {
+                                            return (
+                                                <Navigate to={`/messages?id=${user.uid}`} />
+                                            )
+                                        }
                                     })
                                 }
                             </>
