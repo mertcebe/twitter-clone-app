@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import MessageIcon from '@mui/icons-material/Message';
 import MessageContainer from './MessageContainer';
 import style from './style.module.css';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import database, { auth } from '../../firebase/firebaseConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveMessagingUsers, toggleMessageSec } from '../../reducers/messageReducers/MessageActions';
@@ -86,6 +86,10 @@ const MessagesPage = () => {
         }
     }, []);
 
+    useEffect(() => {
+        setSearchUsers(searchParams?[searchUsers&&searchUsers.find((user) => user.owner.uid === searchParams)]:[]);
+    }, [searchParamsForSearch])
+
     let dispatch = useDispatch();
 
     const openMessageContainer = () => {
@@ -118,31 +122,45 @@ const MessagesPage = () => {
                             </div>
                             <form style={{ boxSizing: "border-box", padding: "0 10px", margin: "10px 0", position: "relative" }} onSubmit={(e) => {
                                 e.preventDefault();
-                                navigate(`/messages?search=${searchText}`);
-                                getSearchUsers(searchText)
-                                    .then((snapshot) => {
-                                        console.log(snapshot)
-                                        setSearchUsers(snapshot);
-                                    })
+                                setSearchUsers();
+                                setSearchText('');
+                                if (searchText) {
+                                    navigate(`/messages?search=${searchText}`);
+                                    getSearchUsers(searchText)
+                                        .then(async (snapshot) => {
+                                            let users = [];
+                                            await snapshot.forEach(async (user) => {
+                                                await getDocs(query(collection(database, `users/${auth.currentUser.uid}/messages/messageAll/${user.uid}`), orderBy('dateSended', 'desc')))
+                                                    .then((snapshotForLastMessage) => {
+                                                        users.push({
+                                                            owner: user,
+                                                            lastMessage: snapshotForLastMessage.docs[0]?.data() ?? null
+                                                        });
+                                                    })
+                                                setSearchUsers(users);
+                                            })
+                                        })
+                                }
                             }}>
-                                <TextField variant='outlined' size='small' InputProps={{ style: { borderRadius: "20px", paddingLeft: "30px" } }} fullWidth placeholder={`Search Direct Messages`} onChange={(e) => { setSearchText(e.target.value); }} />
+                                <TextField variant='outlined' size='small' InputProps={{ style: { borderRadius: "20px", paddingLeft: "30px" } }} fullWidth placeholder={`Search Direct Messages`} value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
                                 <span style={{ position: "absolute", left: "26px", top: "7px" }}><i className="fa-solid fa-magnifying-glass" style={{ color: "grey" }}></i></span>
                             </form>
                         </div>
 
-                        <div>
+                        <div style={{borderBottom: "2px solid #efefef"}}>
                             {
-                                searchParamsForSearch &&
-                                <>
-                                    {
-                                        searchUsers ?
-                                            <>
-
-                                            </>
-                                            :
-                                            <></>
-                                    }
-                                </>
+                                searchUsers ?
+                                    <>
+                                        {
+                                            searchUsers.map((user) => {
+                                                return (
+                                                    <MessageContainer message={user} />
+                                                )
+                                            })
+                                        }
+                                    </>
+                                    :
+                                    <></>
                             }
                         </div>
                     </div>
